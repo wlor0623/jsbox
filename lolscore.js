@@ -43,7 +43,6 @@ function render(resp, dateIndex) {
   }
   // console.log(timeArr)
   var toDayData = timeDataArr[dateIndex]; //当天数据
-  
   var headerDateTip = toDayData.lDate; //头部日期提示
   var toDayList = toDayData.list; //当天比赛数据
   // console.log(toDayList);
@@ -54,10 +53,12 @@ function render(resp, dateIndex) {
     obj.content = {};
     obj.onewinscore = {};
     obj.towwinscore = {};
+    obj.scheduleid={},
     obj.title.text = toDayList[i].oneseedname + "-vs-" + toDayList[i].twoseedname
     obj.content.text = toDayList[i].starttime
     obj.onewinscore.text = toDayList[i].onewin + "  [ " + toDayList[i].oneScore + " ]";
     obj.towwinscore.text = toDayList[i].twowin + "  [ " + toDayList[i].twoScore + " ]";
+    obj.scheduleid.text=toDayList[i].scheduleid
     rowToDayList.push(obj);
   }
  
@@ -171,7 +172,12 @@ function render(resp, dateIndex) {
         events: {
           didSelect: function (tableView, indexPath) {
             var row = indexPath.row;
-            $ui.toast(row);
+            var scheduleid = rowToDayList[row].scheduleid.text;
+            console.log(scheduleid)
+            $app.openBrowser({
+              type: 10000,
+              url: "http://www.wanplus.com/schedule/"+scheduleid+".html"
+            })
           }
         }
       },

@@ -1,3 +1,4 @@
+//https://github.com/wlor0623/jsbox/edit/master/lolscore.js
 var resp = []
 $http.post({
   url: "http://www.wanplus.com/ajax/schedule/list",

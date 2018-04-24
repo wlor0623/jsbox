@@ -29,7 +29,6 @@ $http.post({
 
 function render(resp, dateIndex) {
   var data = resp.data
-  
   console.log(data)
   var prevdate = data.data.prevdate; //上周时间
   var nextdate = data.data.nextdate; //下周时间
@@ -41,11 +40,19 @@ function render(resp, dateIndex) {
     timeArr.push(key);
     timeDataArr.push(scheduleList[key]);
   }
-  // console.log(timeArr)
-  var toDayData = timeDataArr[dateIndex]; //当天数据
+  // ---无比赛过滤器
+  var timeTArr=[];
+  var timeTDataArr=[];
+  for (var i = 0; i < timeDataArr.length; i++) {
+    if (timeDataArr[i].list != false){
+      timeTArr.push(timeArr[i]);
+      timeTDataArr.push(timeDataArr[i]);
+    }
+  }
+  // ---过滤器end
+  var toDayData = timeTDataArr[dateIndex]; //当天数据
   var headerDateTip = toDayData.lDate; //头部日期提示
   var toDayList = toDayData.list; //当天比赛数据
-  // console.log(toDayList);
   var rowToDayList = []; //每行比赛数据
   for (var i = 0; i < toDayList.length; i++) {
     var obj = {};
@@ -53,21 +60,19 @@ function render(resp, dateIndex) {
     obj.content = {};
     obj.onewinscore = {};
     obj.towwinscore = {};
-    obj.scheduleid={},
+    obj.scheduleid = {},
     obj.title.text = toDayList[i].oneseedname + "-vs-" + toDayList[i].twoseedname
     obj.content.text = toDayList[i].starttime
     obj.onewinscore.text = toDayList[i].onewin + "  [ " + toDayList[i].oneScore + " ]";
     obj.towwinscore.text = toDayList[i].twowin + "  [ " + toDayList[i].twoScore + " ]";
-    obj.scheduleid.text=toDayList[i].scheduleid
+    obj.scheduleid.text = toDayList[i].scheduleid
     rowToDayList.push(obj);
   }
- 
-  // console.log(rowToDayList);
   $ui.render({
     views: [{
         type: "menu",
         props: {
-          items: timeArr,
+          items: timeTArr,
           index: dateIndex
         },
         layout: function (make) {
@@ -113,7 +118,7 @@ function render(resp, dateIndex) {
                 id: "title",
                 font: $font(20)
               },
-              layout: function (make,view) {
+              layout: function (make, view) {
                 make.center.equalTo(view.super)
                 // make.left.equalTo(160)
                 // make.top.right.inset(8)
@@ -127,7 +132,7 @@ function render(resp, dateIndex) {
                 textColor: $color("#888888"),
                 font: $font(15)
               },
-              layout: function (make,view) {
+              layout: function (make, view) {
                 make.left.right.equalTo(180);
                 make.bottom.equalTo(0);
               }
@@ -176,7 +181,7 @@ function render(resp, dateIndex) {
             console.log(scheduleid)
             $app.openBrowser({
               type: 10000,
-              url: "http://www.wanplus.com/schedule/"+scheduleid+".html"
+              url: "http://www.wanplus.com/schedule/" + scheduleid + ".html"
             })
           }
         }
@@ -215,7 +220,7 @@ function render(resp, dateIndex) {
       }
     ]
   })
-  if(toDayData.list==false){
+  if (toDayData.list == false) {
     return $ui.toast("无数据");
   }
 }

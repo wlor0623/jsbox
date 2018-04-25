@@ -1,4 +1,8 @@
-//https://github.com/wlor0623/jsbox/edit/master/lolscore.js
+// 原作者：wlor0623，  https://github.com/wlor0623/jsbox/edit/master/lolscore.js
+// 由 QvQ修改： https://github.com/FrankHan/jsbox/blob/master/LOL%20All.js  
+
+// 获取比赛数据
+$app.tips("点击即可查看比赛视频");
 var resp = []
 $http.post({
   url: "http://www.wanplus.com/ajax/schedule/list",
@@ -23,56 +27,99 @@ $http.post({
   },
   handler: function (resp) {
     resp = resp;
-    render(resp, 0);
+    var data = resp.data
+    console.log(data)
+
+    var scheduleList = data.data.scheduleList;
+    for (var k in scheduleList) {
+      if (scheduleList[k].week == "今天") {
+        console.log(k)
+        var todayDateStore = k
+      }
+    }
+
+    var timeArr = [] //取时间值
+    var timeDataArr = []; //数据值
+
+    for (var key in scheduleList) {
+      timeArr.push(key);
+      //timeDataArr.push(scheduleList[key]);
+      //console.log(timeDataArr)
+    }
+
+    for (var i = 0; i < timeArr.length; i++) {
+      if (timeArr[i] == todayDateStore) {
+        console.log(i)
+        render(resp, i);
+      }
+    }
   }
 })
-
+// 渲染
 function render(resp, dateIndex) {
   var data = resp.data
-  console.log(data)
+  //  console.log(data)
   var prevdate = data.data.prevdate; //上周时间
   var nextdate = data.data.nextdate; //下周时间
+  var prevtime = data.data.prevtime; //上周时间戳
+  var nexttime = data.data.nexttime; //下周时间戳
   var timeArr = [] //取时间值
+  var timeForHeader = []; // 显示在menu
   var timeDataArr = []; //数据值
   var rowsData = []; //列表信息
   var scheduleList = data.data.scheduleList;
   for (var key in scheduleList) {
     timeArr.push(key);
+    timeForHeader.push(scheduleList[key].week); // lDate,date,week,filterdate
+    //console.log(key)  //打印日期
     timeDataArr.push(scheduleList[key]);
   }
+
   // ---无比赛过滤器
-  var timeTArr=[];
-  var timeTDataArr=[];
+  var timeTArr = [];
+  var timeTDataArr = [];
+  var timeForHeaderT = [];
   for (var i = 0; i < timeDataArr.length; i++) {
-    if (timeDataArr[i].list != false){
+    if (timeDataArr[i].list != false) {
       timeTArr.push(timeArr[i]);
+      timeForHeaderT.push(timeForHeader[i]);
       timeTDataArr.push(timeDataArr[i]);
     }
   }
   // ---过滤器end
-  var toDayData = timeTDataArr[dateIndex]; //当天数据
+
+  var toDayData = timeTDataArr[dateIndex]; //当天数据 
   var headerDateTip = toDayData.lDate; //头部日期提示
+
   var toDayList = toDayData.list; //当天比赛数据
   var rowToDayList = []; //每行比赛数据
+  // 循环添加信息
   for (var i = 0; i < toDayList.length; i++) {
     var obj = {};
-    obj.title = {};
-    obj.content = {};
-    obj.onewinscore = {};
-    obj.towwinscore = {};
-    obj.scheduleid = {},
-    obj.title.text = toDayList[i].oneseedname + "-vs-" + toDayList[i].twoseedname
-    obj.content.text = toDayList[i].starttime
-    obj.onewinscore.text = toDayList[i].onewin + "  [ " + toDayList[i].oneScore + " ]";
-    obj.towwinscore.text = toDayList[i].twowin + "  [ " + toDayList[i].twoScore + " ]";
-    obj.scheduleid.text = toDayList[i].scheduleid
+    obj.title = {}; //参赛队伍
+    obj.content = {}; //比赛介绍
+    obj.gamename = {}; //比赛名称
+    obj.onewinscore = {}; //一队比分
+    obj.towwinscore = {}; //二队比分
+    obj.scheduleid = {}; //比赛id
+    obj.oneicon = {}; //一队图标
+    obj.twoicon = {}; //二队图标
+    obj.oneicon.src = toDayList[i].oneicon;
+    obj.twoicon.src = toDayList[i].twoicon;
+    obj.title.text = toDayList[i].oneseedname + " : " + toDayList[i].twoseedname;
+    obj.content.text = toDayList[i].ename + toDayList[i].groupname + " " + toDayList[i].starttime;
+    obj.onewinscore.text = toDayList[i].onewin;
+    obj.towwinscore.text = toDayList[i].twowin;
+    obj.scheduleid.text = toDayList[i].scheduleid;
     rowToDayList.push(obj);
   }
+  // 渲染列表
   $ui.render({
     views: [{
         type: "menu",
         props: {
-          items: timeTArr,
+          //items: timeTArr,
+          items: timeForHeaderT,
           index: dateIndex
         },
         layout: function (make) {
@@ -91,7 +138,7 @@ function render(resp, dateIndex) {
         type: "list",
         props: {
           grouped: true,
-          rowHeight: 64,
+          rowHeight: 68, // 行高
           header: {
             type: "label",
             props: {
@@ -102,24 +149,15 @@ function render(resp, dateIndex) {
               font: $font(14)
             }
           },
-          footer: {
-            type: "label",
-            props: {
-              height: 20,
-              text: "-我是有底线的-",
-              textColor: $color("#AAAAAA"),
-              align: $align.center,
-              font: $font(12)
-            }
-          },
           template: [{
               type: "label",
               props: {
-                id: "title",
+                id: "title", // 队伍
                 font: $font(20)
               },
               layout: function (make, view) {
-                make.center.equalTo(view.super)
+                make.centerX.equalTo(0)
+                make.top.offset(16)
                 // make.left.equalTo(160)
                 // make.top.right.inset(8)
                 make.height.equalTo(24)
@@ -131,35 +169,63 @@ function render(resp, dateIndex) {
                 id: "content",
                 textColor: $color("#888888"),
                 font: $font(15)
-              },
+              }, // 比赛时间 id content
               layout: function (make, view) {
-                make.left.right.equalTo(180);
-                make.bottom.equalTo(0);
+                //make.left.right.equalTo(180);
+                make.top.equalTo(48)
+                make.centerX.equalTo(0) // 居中
+                make.bottom.equalTo(-2);
               }
             },
             {
               type: "label",
               props: {
-                id: "onewinscore",
+                id: "onewinscore", //一队比分
                 textColor: $color("#888888"),
-                font: $font(15)
+                font: $font(25)
               },
               layout: function (make) {
-                make.left.equalTo(10)
-                make.top.right.inset(8)
+                //make.left.equalTo(40)
+                make.left.inset(48)
+                make.top.inset(10)
                 make.height.equalTo(40)
               }
             },
             {
+              type: "image",
+              props: {
+                id: "oneicon", //一队图标
+                radius: 20
+              },
+              layout: function (make, view) {
+                make.left.equalTo(100);
+                make.top.equalTo(8);
+                make.size.equalTo(40)
+              }
+            },
+            {
+              type: "image",
+              props: {
+                id: "twoicon", //二队图标
+                radius: 20
+              },
+              layout: function (make, view) {
+                make.right.inset(100);
+                make.top.equalTo(8);
+                make.size.equalTo(40)
+              }
+            },
+            {
               type: "label",
               props: {
-                id: "towwinscore",
+                id: "towwinscore", //二队比分
                 textColor: $color("#888888"),
-                font: $font(15)
-              },
+                font: $font(25)
+              }, // 右边比分
               layout: function (make) {
-                make.right.equalTo(10)
-                make.top.right.inset(8)
+                //make.right.equalTo(40)
+                make.right.inset(48)
+                make.top.inset(10)
                 make.height.equalTo(40)
               }
             }
@@ -172,7 +238,6 @@ function render(resp, dateIndex) {
           make.left.right.equalTo(0);
           make.top.equalTo(45);
           make.height.equalTo(view.super);
-          make.bottom.equalTo(100);
         },
         events: {
           didSelect: function (tableView, indexPath) {
@@ -189,7 +254,10 @@ function render(resp, dateIndex) {
       {
         type: "button",
         props: {
-          title: prevdate
+          title: prevdate,
+          info: {
+            prevtime: prevtime
+          }
         },
         layout: function (make, view) {
           make.left.equalTo(30);
@@ -198,14 +266,19 @@ function render(resp, dateIndex) {
         },
         events: {
           tapped: function (sender) {
-            $ui.toast("Tapped")
+            var prevtime=sender.info.prevtime; //上周时间戳
+            console.log(prevtime);
+            $ui.toast(prevtime + " 功能待添加");
           }
         }
       },
       {
         type: "button",
         props: {
-          title: nextdate
+          title: nextdate,
+          info: {
+            nexttime: nexttime
+          }
         },
         layout: function (make, view) {
           make.right.equalTo(-30);
@@ -214,7 +287,8 @@ function render(resp, dateIndex) {
         },
         events: {
           tapped: function (sender) {
-            $ui.toast("Tapped")
+            console.log(sender.info.nexttime); //下周时间戳
+            $ui.toast(sender.info.nexttime + " 功能待添加")
           }
         }
       }

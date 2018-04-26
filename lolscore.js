@@ -28,31 +28,43 @@ $http.post({
   handler: function (resp) {
     resp = resp;
     var data = resp.data
+
     console.log(data)
 
     var scheduleList = data.data.scheduleList;
     for (var k in scheduleList) {
       if (scheduleList[k].week == "今天") {
-        console.log(k)
         var todayDateStore = k
       }
     }
-
+    console.log(todayDateStore)
     var timeArr = [] //取时间值
     var timeDataArr = []; //数据值
-
     for (var key in scheduleList) {
       timeArr.push(key);
-      //timeDataArr.push(scheduleList[key]);
-      //console.log(timeDataArr)
+      timeDataArr.push(scheduleList[key]);
     }
-
-    for (var i = 0; i < timeArr.length; i++) {
-      if (timeArr[i] == todayDateStore) {
-        console.log(i)
-        render(resp, i);
+    // ---无比赛过滤器
+    var timeTArr = [];
+    var timeTDataArr = [];
+    var timeForHeaderT = [];
+    for (var i = 0; i < timeDataArr.length; i++) {
+      if (timeDataArr[i].list != false) {
+        timeTArr.push(timeArr[i]);
+        // timeForHeaderT.push(timeForHeader[i]);
+        // timeTDataArr.push(timeDataArr[i]);
       }
     }
+    // ---过滤器end
+    console.log(timeTArr)
+    for (var i = 0; i < timeTArr.length; i++) {
+      if (timeTArr[i] >= todayDateStore) {
+        console.log(i); //定位到最近一天
+        render(resp, i);
+        break;
+      }
+    }
+    //render(resp, 0);
   }
 })
 // 渲染
@@ -171,7 +183,6 @@ function render(resp, dateIndex) {
                 font: $font(15)
               }, // 比赛时间 id content
               layout: function (make, view) {
-                //make.left.right.equalTo(180);
                 make.top.equalTo(48)
                 make.centerX.equalTo(0) // 居中
                 make.bottom.equalTo(-2);

@@ -54,7 +54,7 @@ const searchView = {
       make.top.inset(100)
       make.left.inset(162)
     }
-  },{
+  }, {
     type: "text",
     props: {
       id: "loading",
@@ -631,7 +631,7 @@ const detailView = {
         } //tapped
       } //events
 
-    },{
+    }, {
       type: "button",
       props: {
         title: "返回",
@@ -643,12 +643,12 @@ const detailView = {
         make.width.equalTo(view.super).dividedBy(4).offset(-10)
         make.height.equalTo(60)
       },
-      events:{
-        tapped(sender){
+      events: {
+        tapped(sender) {
           $ui.pop();
         }
       }
-    },{
+    }, {
       type: "button",
       props: {
         id: "share",
@@ -676,7 +676,7 @@ const detailView = {
       }
 
     },
-    
+
   ],
   layout: $layout.fill
 
@@ -704,7 +704,7 @@ const screenshotView = {
         },
         layout: $layout.fill
 
-      }, ],
+      }],
     },
     layout: $layout.fill,
     events: {
@@ -717,6 +717,23 @@ const screenshotView = {
       }
     }
 
+  }, {
+    type: "button",
+    props: {
+      title: "返回",
+      bgcolor:$color("#67c23a")
+    },
+    layout: function (make, view) {
+      make.bottom.inset(20);
+      make.width.equalTo(view.super).dividedBy(4).offset(-10);
+      make.height.equalTo(60);
+      make.right.equalTo(-20);
+    },
+    events: {
+      tapped(sender) {
+        $ui.pop();
+      }
+    }
   }],
   layout: $layout.fill
 }
@@ -879,7 +896,7 @@ function actressView(actress, cover) {
           favCode = data.code
           //$ui.action(data.code)
           getDetail(data.link)
-          $ui.push(detailView)
+          $ui.push(detailView);
 
           /*if (LocalFavList.indexOf(favLink) > -1) {
             if ($("menu").index == 0) {

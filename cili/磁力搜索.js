@@ -1,4 +1,4 @@
-//https://github.com/wlor0623/jsbox/blob/master/cili/cili.js
+//https://github.com/wlor0623/jsbox/blob/master/cili/%E7%A3%81%E5%8A%9B%E6%90%9C%E7%B4%A2.js
 var urls = [{
   name: "磁力猫",
   pattern: "http://www.cilimao.me/api/search?size=10&sortDirections=desc&page=0&word="

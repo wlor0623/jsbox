@@ -39,20 +39,24 @@ var text='';
 for (var i = 0; i < urls.length; i++) {
   nameList[i] = urls[i].name
 }
+//番号拼单
+clipboardDetect();
 // 弹出
-$input.text({
-  handler: function (text) {
-    text = encodeURI(text);
-    //如果直接按完成 则获取剪贴板内容搜索
-    if (text == '') {
-      var text = $clipboard.text;
-      return search(dIndex, text);
-    } else {
-      //如果输入了内容
-      search(dIndex, text);
+function inputpop(){
+  $input.text({
+    handler: function (text) {
+      text = encodeURI(text);
+      //如果直接按完成 则获取剪贴板内容搜索
+      if (text == '') {
+        var text = $clipboard.text;
+        return search(dIndex, text);
+      } else {
+        //如果输入了内容
+        search(dIndex, text);
+      }
     }
-  }
-})
+  })
+}
 
 function search(dIndex, word) {
   var rowsData = [];
@@ -188,4 +192,15 @@ function search(dIndex, word) {
       })
     }
   })
+}
+// 剪贴板检测
+function clipboardDetect(){
+  var str = $clipboard.text;
+  var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
+  var text = str.match(reg1);
+  if(text){
+    return search(dIndex, text);//有番号
+  }else{
+    inputpop();//无番号
+  }
 }

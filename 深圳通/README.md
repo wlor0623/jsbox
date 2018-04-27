@@ -1,6 +1,6 @@
 ## 深圳通
-[示例1](https://ws1.sinaimg.cn/large/0072Lfvtly1fqr070bkjjj308x0fun23.jpg)
-[示例2](https://ws1.sinaimg.cn/large/0072Lfvtly1fqr0acn4nbj308z0fxjrt.jpg)
+[示例1]: https://ws1.sinaimg.cn/large/0072Lfvtly1fqr070bkjjj308x0fun23.jpg
+[示例2]: https://ws1.sinaimg.cn/large/0072Lfvtly1fqr0acn4nbj308z0fxjrt.jpg
 
 ## 更新日志:
 * 2018年4月27日10:30:54 

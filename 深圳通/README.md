@@ -1,4 +1,4 @@
-## 深圳通
+## 深圳通信息查询
 ![示例1](https://ws1.sinaimg.cn/large/0072Lfvtly1fqr070bkjjj308x0fun23.jpg)
 ![示例2](https://ws1.sinaimg.cn/large/0072Lfvtly1fqr0acn4nbj308z0fxjrt.jpg)
 

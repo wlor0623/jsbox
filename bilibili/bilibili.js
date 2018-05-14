@@ -78,20 +78,20 @@ function clipboardDetect() {
         {
           title: "从剪贴板获取",
           handler: function() {
-            return render(text); //有
+            render(text); //有
           }
         },
         {
           title: "手动输入",
           handler: function() {
-            return inputpop(); //无
+            inputpop(); //无
           }
         }
       ]
     })
    
   } else {
-    return inputpop(); //无
+    inputpop(); //无
   }
 }
 //检测扩展更新

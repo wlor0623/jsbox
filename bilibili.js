@@ -64,13 +64,29 @@ function inputpop() {
 // 剪贴板检测
 function clipboardDetect() {
   var link = $clipboard.text;
-  var reg = /-?[1-9]\d{7,8}/g;
+  var reg = /-?[1-9]\d{6,7}/g;
   var text = link.match(reg);
-  console.log(link)
-  console.log(text)
   if (text) {
-    return render(text); //有
+    $ui.alert({
+      title: "提示",
+      message: "检测到av号,是否手动输入?",
+      actions: [
+        {
+          title: "从剪贴板获取",
+          handler: function() {
+            return render(text); //有
+          }
+        },
+        {
+          title: "手动输入",
+          handler: function() {
+            return inputpop(); //无
+          }
+        }
+      ]
+    })
+   
   } else {
-    inputpop(); //无
+    return inputpop(); //无
   }
 }

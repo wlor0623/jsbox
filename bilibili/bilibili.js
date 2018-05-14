@@ -1,3 +1,6 @@
+var version = 1.01;
+//检测扩展更新
+scriptVersionUpdate();
 
 // 剪贴板检测
 clipboardDetect();
@@ -91,3 +94,29 @@ function clipboardDetect() {
     return inputpop(); //无
   }
 }
+//检测扩展更新
+function scriptVersionUpdate() {
+    $http.get({
+      url: "https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/updateInfo.js",
+      handler: function (resp) {
+        var afterVersion = resp.data.version;
+        var msg = resp.data.msg;
+        if (afterVersion > version) {
+          $ui.alert({
+            title: "检测到新的版本！V" + afterVersion,
+            message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
+            actions: [{
+              title: "更新",
+              handler: function () {
+                var url = "jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/bilibili.js&name=哔哩哔哩封面提取v" + afterVersion + "&icon=icon_014.png";
+                $app.openURL(encodeURI(url));
+                $app.close()
+              }
+            }, {
+              title: "取消"
+            }]
+          })
+        }
+      }
+    })
+  }

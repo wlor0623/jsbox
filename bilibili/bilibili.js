@@ -65,13 +65,10 @@ function inputpop() {
   })
 }
 
-
 // 剪贴板检测
 function clipboardDetect() {
   var link = $clipboard.text;
-  var reg = "https://www.bilibili.com/video/av\\d{7,8}";
-  var text = link.match(reg)[0];
-  if (text) {
+  if (matchFun(text)) {
     $ui.alert({
       title: "提示",
       message: "检测到av号,是否手动输入?",
@@ -91,6 +88,14 @@ function clipboardDetect() {
     })
   } else {
     inputpop(); //无
+  }
+}
+
+// 正则过滤
+function matchFun(link) {
+  let reg = link.match("https://www.bilibili.com/video/av\\d{7,8}");
+  if (reg != null) {
+      return reg[0].slice(33);
   }
 }
 

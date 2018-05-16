@@ -68,7 +68,8 @@ function inputpop() {
 // 剪贴板检测
 function clipboardDetect() {
   let link = $clipboard.text;
-  if (matchFun(link)) {
+  let text=matchFun(link);
+  if (text) {
     $ui.alert({
       title: "提示",
       message: "检测到av号,是否手动输入?",

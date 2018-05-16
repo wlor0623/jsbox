@@ -70,7 +70,7 @@ function inputpop() {
 function clipboardDetect() {
   var link = $clipboard.text;
   var reg = "https://www.bilibili.com/video/av\\d{7,8}";
-  var text = link.match(reg);
+  var text = link.match(reg)[0];
   if (text) {
     $ui.alert({
       title: "提示",

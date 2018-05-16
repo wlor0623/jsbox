@@ -97,7 +97,11 @@ function matchFun(link) {
   let reg = link.match("https://www.bilibili.com/video/av\\d{7,8}");
   if (reg != null) {
     let str=reg[0].slice(33);
+    console.log("过滤");
+    console.log(str);
       return str;
+  }else{
+    return;
   }
 }
 

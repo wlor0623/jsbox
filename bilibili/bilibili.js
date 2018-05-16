@@ -4,7 +4,6 @@ scriptVersionUpdate();
 
 // 剪贴板检测
 clipboardDetect();
-
 function render(id) {
   $http.get({
     url: "http://www.galmoe.com/t.php?aid=" + id,
@@ -44,7 +43,7 @@ function render(id) {
             }
           ]
         })
-      } else {
+      }else{
         $ui.alert("封面获取失败！")
       }
     }
@@ -53,7 +52,6 @@ function render(id) {
 
 // 获取剪贴板文本
 let text = $clipboard.link;
-console.log(text);
 // 弹出输入框
 function inputpop() {
   $input.text({
@@ -68,68 +66,55 @@ function inputpop() {
 // 剪贴板检测
 function clipboardDetect() {
   let link = $clipboard.text;
-  let text=matchFun(link);
+  let reg = /-?[1-9]\d{6,7}/g;
+  let text = link.match(reg);
   if (text) {
     $ui.alert({
       title: "提示",
       message: "检测到av号,是否手动输入?",
-      actions: [{
+      actions: [
+        {
           title: "从剪贴板获取",
-          handler: function () {
+          handler: function() {
             render(text); //有
           }
         },
         {
           title: "手动输入",
-          handler: function () {
+          handler: function() {
             inputpop(); //无
           }
         }
       ]
     })
+   
   } else {
     inputpop(); //无
   }
 }
-
-// 正则过滤
-function matchFun(link) {
-  let reg = link.match("https://www.bilibili.com/video/av\\d{7,8}");
-  if (reg != null) {
-    let str=reg[0].slice(33);
-    console.log("过滤");
-    console.log(str);
-      return str;
-  }else{
-    return;
-  }
-}
-
 //检测扩展更新
 function scriptVersionUpdate() {
-  $http.get({
-    url: "https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/updateInfo.js",
-    handler: function (resp) {
-      let afterVersion = resp.data.version;
-      let msg = resp.data.msg;
-      if (afterVersion > version) {
-        $ui.alert({
-          title: "检测到新的版本！V" + afterVersion,
-          message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
-          actions: [{
-            title: "更新",
-            handler: function () {
-              const url = "jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/bilibili.js&name=哔哩哔哩封面提取v" + afterVersion + "&icon=icon_014.png";
-              $app.openURL(encodeURI(url));
-              $app.close()
-            }
-          }, {
-            title: "取消"
-          }]
-        })
-      }else{
-        return;
+    $http.get({
+      url: "https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/updateInfo.js",
+      handler: function (resp) {
+        let afterVersion = resp.data.version;
+        let msg = resp.data.msg;
+        if (afterVersion > version) {
+          $ui.alert({
+            title: "检测到新的版本！V" + afterVersion,
+            message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
+            actions: [{
+              title: "更新",
+              handler: function () {
+                let url = "jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/bilibili.js&name=哔哩哔哩封面提取v" + afterVersion + "&icon=icon_014.png";
+                $app.openURL(encodeURI(url));
+                $app.close()
+              }
+            }, {
+              title: "取消"
+            }]
+          })
+        }
       }
-    }
-  })
-}
+    })
+  }

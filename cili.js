@@ -1,4 +1,3 @@
-// https://github.com/wlor0623/jsbox/blob/master/cili.js
 const urls = [
   {
     name: "磁力猫",
@@ -24,10 +23,17 @@ const urls = [
 let nameList = [];
 let dIndex = 0;
 let text = "";
+let query = $context.query;
+
 for (let i = 0; i < urls.length; i++) {
   nameList[i] = urls[i].name;
 }
-clipboardDetect();
+if(query.fhcode){
+  search(dIndex, query.fhcode);
+}else{
+  clipboardDetect();
+}
+
 // 弹出
 function inputpop() {
   $input.text({
@@ -188,7 +194,8 @@ function search(dIndex, word) {
                 if (rowsData[row].magnet.text) {
                   $clipboard.text = rowsData[row].magnet.text;
                   tableView.delete(row);
-                  $ui.toast("复制成功!", 0.3);
+                  $ui.toast("复制成功!", 0.5);
+                  $app.openURL("alook://")
                 } else {
                   return $ui.error("无数据!");
                 }
@@ -204,6 +211,9 @@ function search(dIndex, word) {
 //剪贴板检测
 function clipboardDetect() {
   var str = $clipboard.text;
+  if(!str){
+    inputpop();
+  }
   var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
   var reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3,4}/g;
   var match = str.match(reg1);

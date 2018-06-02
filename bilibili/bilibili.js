@@ -365,8 +365,9 @@ function render(listData) {
           borderColor: $color('#eee')
         },
         layout: function (make) {
-          make.left.bottom.right.equalTo(0);
-          make.height.equalTo(60);
+          make.left.right.equalTo(0);
+          make.bottom.equalTo(-5)
+          make.height.equalTo(50);
         },
         events: {
           changed: function (sender) {

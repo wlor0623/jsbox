@@ -275,6 +275,7 @@ function render(listData) {
         events: {
           didReachBottom: function (sender) {
             getlistData(vedioListUrl);
+            sender.endFetchingMore()
           },
           didSelect: function (sender, indexPath, data) {
             //打开网页

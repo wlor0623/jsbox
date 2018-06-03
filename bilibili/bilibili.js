@@ -1204,7 +1204,7 @@ function scriptVersionUpdate() {
               title: "更新",
               handler: function() {
                 let url =
-                  "jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/bilibili.js&name=bilibili" +
+                  "jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/bilibili.js&name=bilibili v" +
                   afterVersion +
                   "&icon=icon_014.png";
                 $app.openURL(encodeURI(url));

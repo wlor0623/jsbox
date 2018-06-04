@@ -1,13 +1,20 @@
-const version = 1.01;
+const version = 1.02;
 //检测扩展更新
 scriptVersionUpdate();
 
+// https://app.bilibili.com/x/v2/search?build=6199&keyword=%E7%88%B1&pn=1&ps=20  搜索
 const vedioListUrl =
   "https://app.bilibili.com/x/feed/index?build=6190&network=wifi&platform=ios"; //列表
 const hotListUrl = "https://app.bilibili.com/x/v2/rank?order=all&pn=0&ps=100"; //排行榜
-const repliesListUrl =
-  "https://api.bilibili.com/x/v2/reply?plat=3&pn=3&ps=20&sort=0&type=1";
-
+const repliesListUrl ="https://api.bilibili.com/x/v2/reply?plat=3&pn=1&ps=20&sort=0&type=1";
+//https://api.bilibili.com/x/v2/reply?oid=6666666&plat=3&pn=3&ps=20&sort=0&type=1 评论
+//https://api.bilibili.com/x/article/categories     //分类?
+// https://bangumi.bilibili.com/appindex/cinema/fall?platform=ios&region=index  //落 首页 电影
+// https://bangumi.bilibili.com/appindex/follow_index_mine?access_key=611aaad5fb61b6494ce39b6d6ff9d4f3&pagesize=6   下一个索引
+// https://bangumi.bilibili.com/appindex/cinema?platform=ios   //电影院
+// https://bangumi.bilibili.com/appindex/follow_index_fall?mobi_app=iphone&pagesize=30   //指数
+//https://api.live.bilibili.com/room/v1/AppIndex/getAllList?device=phone&platform=ios&scale=3   //房间  规模
+// https://app.bilibili.com/x/v2/view/page?access_key=611aaad5fb61b6494ce39b6d6ff9d4f3&actionKey=appkey&aid=23977784&appkey=27eb53fc9058f8c3&build=6190&device=phone&mobi_app=iphone&platform=ios&sign=f1de6b939e8c99cca1085f354436690f&ts=1527855897
 let listData = []; //首页数据
 let firstLoad = true; //首次加载
 let aid = 0; //当前av号
@@ -17,9 +24,10 @@ let searchLists = [];//搜索数据
 let searchPageNumber=1;//搜索页码
 let searchText="";//关键词
 let firstSearch=true;
+let vedioListArr=[];//
 // 配置参数 调试模式
 const options = {
-  debug: true
+  debug: false
 };
 
 start();
@@ -30,7 +38,6 @@ function start() {
 
 //获取首页数据
 function getlistData(url) {
-  
   let startTime = new Date().valueOf();
   // $ui.loading("加载中");
   $http.get({
@@ -46,49 +53,61 @@ function getlistData(url) {
         // var bannerData = data[0].banner_item; //轮播数据
         for (let i = 1; i < data.length; i++) {
           //去广告标示
-          if (data[i].is_ad != "" && data[i].duration != undefined) {
-            let cover_duration_title = data[i].title; //标题
-            let cover_duration_play =
-              data[i].play > 10000
-                ? Math.ceil(data[i].play / 1000) / 10 + "万"
-                : " " + data[i].play + "次"; //播放量
-            let cover_duration_duration = s_to_m_s(data[i].duration); //时长
-            let cover_item_image = data[i].cover; //封面
-            let cover_item_name = "Up:" + data[i].name; //up主
-            let cover_item_tag_name = data[i].tname; //标签
-            let cover_item_ctime = ms_To_ymd(data[i].ctime); //发布时间
-            let cover_item_param = data[i].param; //av 号
-            let cover_item_danmu = data[i].danmaku; //弹幕数量
-            var obj = {
-              cover_duration_title: {
-                text: data[i].title //标题
-              },
-              cover_duration_play: {
-                text: cover_duration_play //播放量
-              },
-              cover_duration_duration: {
-                text: cover_duration_duration //时长
-              },
-              cover_item_image: {
-                src: cover_item_image //封面
-              },
-              cover_item_name: {
-                text: cover_item_name //up主
-              },
-              cover_item_tag_name: {
-                text: cover_item_tag_name //标签
-              },
-              cover_item_ctime: {
-                text: cover_item_ctime //发布时间
-              },
-              cover_item_param: {
-                text: cover_item_param //av 号
-              },
-              cover_item_danmu: {
-                text: cover_item_danmu //弹幕数量
-              }
-            };
-            listData.push(obj);
+          let param=data[i].param;
+          let is_ad=data[i].is_ad;
+          let duration=data[i].duration;
+          //去广告
+          if (is_ad != "" && duration != undefined) {
+            // 去重复
+            if(vedioListArr.indexOf(param)==-1){
+              let cover_duration_title = data[i].title; //标题
+              let cover_duration_play =
+                data[i].play > 10000
+                  ? Math.ceil(data[i].play / 1000) / 10 + "万"
+                  : " " + data[i].play + "次"; //播放量
+              let cover_duration_duration = s_to_m_s(data[i].duration); //时长
+              let cover_item_image = data[i].cover; //封面
+              let cover_item_name = "Up:" + data[i].name; //up主
+              let cover_item_tag_name = data[i].tname; //标签
+              let cover_item_ctime = ms_To_md(data[i].ctime); //发布时间
+              let cover_item_param = data[i].param; //av 号
+              let cover_item_danmu = data[i].danmaku; //弹幕数量
+              var obj = {
+                cover_duration_title: {
+                  text: data[i].title //标题
+                },
+                cover_duration_play: {
+                  text: cover_duration_play //播放量
+                },
+                cover_duration_duration: {
+                  text: cover_duration_duration //时长
+                },
+                cover_item_image: {
+                  src: cover_item_image //封面
+                },
+                cover_item_name: {
+                  text: cover_item_name //up主
+                },
+                cover_item_tag_name: {
+                  text: cover_item_tag_name //标签
+                },
+                cover_item_ctime: {
+                  text: cover_item_ctime //发布时间
+                },
+                cover_item_param: {
+                  text: cover_item_param //av 号
+                },
+                cover_item_danmu: {
+                  text: cover_item_danmu //弹幕数量
+                }
+              };
+              vedioListArr.push(cover_item_param);//加入对比列表
+              listData.push(obj);
+            }else{
+              if (options.debug)console.log(`删除一项重复-av${param}`);
+            }
+          }else{
+            if (options.debug) console.log("删除一项广告")
           }
         }
         if (!firstLoad) {
@@ -100,13 +119,9 @@ function getlistData(url) {
         //首次加载需要渲染视图
         getlistData(vedioListUrl);
         firstLoad = false;
-        if (options.debug) {
-          console.log(
-            "加载时间:" + (new Date().valueOf() - startTime) / 1000 + "s"
-          );
-        }
+        if (options.debug) console.log("加载时间:" + (new Date().valueOf() - startTime) / 1000 + "s");
       } else {
-        return;
+        return $ui.error("加载失败!");
       }
     }
   });
@@ -327,7 +342,7 @@ function render(listData) {
                   type: $kbType.search,
                   placeholder: "输入搜索内容",
                   handler: function(text) {
-                    searchText =text;
+                    searchText =text;//保存到全局
                     getSearchList(searchText,searchPageNumber); //搜索
                   }
                 });
@@ -427,7 +442,7 @@ function getHotList() {
               text: data[i].rname //标签
             },
             cover_item_ctime: {
-              text: ms_To_ymd(data[i].pubdate) //发布时间
+              text: ms_To_md(data[i].pubdate) //发布时间
             }
           };
           hotList.push(obj);
@@ -775,7 +790,7 @@ function getSearchList(keyword,pageNumber) {
               cover_item_ctime
             }
           };
-          searchRanking++;
+          searchRanking++;//搜索数量
           searchLists.push(obj);
         }
         
@@ -1024,9 +1039,15 @@ function openUrlInfo(pageTitle) {
                 {
                   type: "text",
                   props: {
-                    text: data.replies_content_message.text
+                    text: data.replies_content_message.text,
+                    align: $align.center,
+                    lines:0,
+                    insets:20,
+                    editable:false
                   },
-                  layout: $layout.fill
+                  layout: function(make, view) {
+                    make.left.right.top.bottom.inset(20);
+                  }
                 },
                 {
                   type: "view",
@@ -1116,7 +1137,6 @@ function openUrlInfo(pageTitle) {
         //热评
         for (let i = 0; i < 3; i++) {
           changeReplies(repliesList,hots,i);
-          
         }
         // 普通评论
         for (let i = 0; i < replies.length; i++) {
@@ -1135,7 +1155,7 @@ function changeReplies(repliesList,replies,i){
   let replies_uimg = replies[i].member.avatar; //头像
   let replies_like = replies[i].like; //赞
   let level = replies[i].member.level_info.current_level; //等级
-  let replies_ctime = ms_To_ymd(replies[i].ctime); //时间
+  let replies_ctime = ms_To_mdhms(replies[i].ctime); //时间
   let obj = {
     replies_content_message: {
       text: ` ${replies_content_message}`,
@@ -1174,23 +1194,29 @@ function s_to_m_s(s) {
   sec = sec < 10 ? "0" + sec : sec;
   return min + ":" + sec;
 }
-//时间戳转换
-function ms_To_ymd(timestamp) {
+//时间戳转换为 12-01 
+function ms_To_md(timestamp) {
   let date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
-  M =
-    (date.getMonth() + 1 < 10
-      ? "0" + (date.getMonth() + 1)
-      : date.getMonth() + 1) + "-";
+  M =(date.getMonth() + 1 < 10? "0" + (date.getMonth() + 1): date.getMonth() + 1) + "-";
   D = date.getDate() < 10 ? "0" + date.getDate() : date.getDate() + " ";
-
   return M + D;
+}
+//时间戳转换为 12-01 12:00
+function ms_To_mdhms(timestamp) {
+  var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  Y = date.getFullYear() + '-';
+  M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+  D = (date.getDate()<10? '0'+(date.getDate()) : date.getMonth()+1);
+  h = " "+date.getHours() + ':';
+  m = date.getMinutes() + ':';
+  s = date.getSeconds();
+  return Y+M+D+h+m+s;
 }
 
 //检测扩展更新
 function scriptVersionUpdate() {
   $http.get({
-    url:
-      "https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/updateInfo.js",
+    url:"https://raw.githubusercontent.com/wlor0623/jsbox/master/bilibili/updateInfo.js",
     handler: function(resp) {
       let afterVersion = resp.data.version;
       let msg = resp.data.msg;

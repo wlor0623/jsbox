@@ -1,4 +1,4 @@
-const version = 1.02; //版本号
+const version = 1.03; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 // https://app.bilibili.com/x/v2/search?build=6199&keyword=%E7%88%B1&pn=1&ps=20  搜索
@@ -146,7 +146,7 @@ function render(listData) {
                   textColor: $color("#555555"),
                   radius: 10,
                   borderWidth: 1,
-                  borderColor: $color("#e1e1e1")
+                  borderColor: $color("#e8e8e8")
                 },
                 views: [{
                   type: "image",
@@ -188,7 +188,7 @@ function render(listData) {
                         },
                         layout: function (make, view) {
                           make.top.equalTo(0);
-                          make.right.equalTo(0);
+                          make.right.equalTo(-1);
                           make.height.equalTo(20);
                           make.width.equalTo(40);
                         }

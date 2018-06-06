@@ -1,4 +1,4 @@
-const version = 1.01; //版本号
+const version = 1.00; //版本号
 scriptVersionUpdate()
 const urls = [{
     name: "磁力猫",

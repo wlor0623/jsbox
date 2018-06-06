@@ -1,4 +1,4 @@
-const version = 1.00; //版本号
+const version = 1.01; //版本号
 scriptVersionUpdate()
 const urls = [{
     name: "磁力猫",
@@ -21,6 +21,7 @@ let nameList = [];
 let dIndex = 0;
 let texts = "";
 let query = $context.query;
+let pageNum=0;
 for (let i = 0; i < urls.length; i++) {
   nameList[i] = urls[i].name;
 }
@@ -52,7 +53,7 @@ function search(dIndex, word) {
   //加载提示
   $ui.loading("加载中...");
   $http.get({
-    url: urls[dIndex].pattern + word
+    url: `${urls[dIndex].pattern}${word}`
   }).then(function (resp) {
     var data = resp.data;
     $ui.loading(false);
@@ -92,7 +93,8 @@ function search(dIndex, word) {
         obj.title.text = item[i].name;
         obj.content.text = item[i].formatSize;
         obj.magnet.text = item[i].magnet;
-        (obj.date.text = item[i].count), rowsData.push(obj);
+        obj.date.text = item[i].count;
+        rowsData.push(obj);
       }
     }
     $ui.render({
@@ -175,8 +177,8 @@ function search(dIndex, word) {
           layout: function (make, view) {
             make.left.right.equalTo(0);
             make.top.equalTo(45);
-            make.height.equalTo(view.super);
-            make.bottom.equalTo(100);
+            // make.height.equalTo(view.super);
+            make.bottom.equalTo(0);
           },
           events: {
             didSelect: function (tableView, indexPath, data) {
@@ -185,21 +187,16 @@ function search(dIndex, word) {
                 $clipboard.text = rowsData[row].magnet.text;
                 tableView.delete(row);
                 $ui.toast("复制成功!", 0.5);
-                $ui.pop();
               } else {
                 return $ui.error("无数据!");
               }
-            }
-          }
+            },
+          },
+          
         }
       ]
     });
   });
-}
-
-
-function render() {
-
 }
 
 //剪贴板检测

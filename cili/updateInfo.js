@@ -1,7 +1,4 @@
 {
-  "version": 1.61,
-  "msg": "更新说明：\n1.调用内置浏览器",
-  "wfVersion":1.3,
-  "wfMsg": "更新说明：修复剪贴板为空时的效果",
-  "workflow": "https://workflow.is/workflows/41ad696da8f04baea635ec222806b621"
+  "version": 1.01,
+  "msg": "更新说明：\n1.链接修复",
 }

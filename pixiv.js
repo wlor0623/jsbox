@@ -1,6 +1,3 @@
-const userName='';//用户名
-const password=''//密码
-
 const config = {
   debug: true
 };
@@ -12,28 +9,34 @@ let header = {
 let search_keywords = ""; //搜索关键词
 let order_type = "popular_d"; //popular_d 全站   popular_male_d 男性 popular_female_d 女性
 let search_page_number = 1; //页码
-let imagesList=[];
+let imagesList = [];
+const userName = '522436662@qq.com';
+const password = '5637698'
 
+
+getLoginInfo();
+renderView();
+openSearch();
 //切换到搜索
 function openSearch() {
   $input.text({
     type: $kbType.search,
     placeholder: "搜索",
     handler: function (text) {
-       getSearchList(text, order_type, search_page_number);
+      $('pageTitle').text=text;
+      getSearchList(text, order_type, search_page_number);
     }
   });
 }
-getLoginInfo();
-renderView();
-openSearch();
-
 //获取搜索列表
 async function getSearchList(keywords, order_type, search_page_number) {
   search_keywords = keywords;
   keywords = $text.URLEncode(keywords);
   let url = `https://www.pixiv.net/touch/ajax_api/search_api.php?endpoint=search&mode=search_illust&word=${keywords}&order=${order_type}&p=${search_page_number}&type=&scd=&ecd=&circle_list=0&s_mode=s_tag&blt=&bgt=&adult_mode=`;
-  let resp = await $http.get({header: header,url: url});
+  let resp = await $http.get({
+    header: header,
+    url: url
+  });
   let data = resp.data;
   let illust = data.illust;
   for (let i = 0; i < illust.length; i++) {
@@ -45,12 +48,12 @@ async function getSearchList(keywords, order_type, search_page_number) {
     let illust_title = illust[i].illust_title; //标题
     let illust_create_date = illust[i].illust_create_date; //创建时间
     let illust_page_count = illust[i].illust_page_count; //总页数
-    
+
     let likeBtnTitle = '';
-    if(illust[i].bookmark_id){
-      likeBtnTitle='❤'
-    }else{
-      likeBtnTitle = '♡';
+    if (illust[i].bookmark_id) {
+      likeBtnTitle = '❤'
+    } else {
+      likeBtnTitle = '💛';
     }
     const obj = {
       illust_id: {
@@ -89,95 +92,138 @@ async function getSearchList(keywords, order_type, search_page_number) {
   $ui.toast("图片加载完成");
 }
 // 渲染视图
-function renderView(){
+function renderView() {
   $ui.render({
-  views: [{
-    type: "matrix",
-    props: {
-      columns: 2,
-      itemHeight: 150,
-      id: "imagesList",
-      bgcolor: $color("#eee"),
-      spacing: 10,
-      template: {
-        props: {
-          radius: 10
-        },
-        views: [{
-            type: "image", //封面
-            props: {
-              id: "img_url",
-              bgcolor: $color("#eee")
-            },
-            layout: function (make, view) {
-              make.width.equalTo(view.super);
-              make.height.equalTo(view.super);
-            }
+    views: [{
+      type: "matrix",
+      props: {
+        columns: 2,
+        itemHeight: 150,
+        id: "imagesList",
+        bgcolor: $color("#999"),
+        spacing: 10,
+        template: {
+          props: {
+            radius: 10
           },
-          {
-            type: "button",
-            props: {
-              title: "♡",
-              id: "likeBtn",
-              bgcolor: $color("#4f95d3"),
-              font: $font("bold", 20),
-              titleColor: $color("#fff")
+          views: [{
+              type: "image", //封面
+              props: {
+                id: "img_url",
+                bgcolor: $color("#eee")
+              },
+              layout: function (make, view) {
+                make.width.equalTo(view.super);
+                make.height.equalTo(view.super);
+              }
             },
-            layout: function (make, view) {
-              make.width.equalTo(30);
-              make.height.equalTo(30);
-              make.bottom.right.inset(10);
-            },
-            events: {
-              tapped: async function (sender) {
-                let illust_id = sender.info;
-                if(sender.title=='♡'){
-                  if (await likeImgfn(illust_id)){
-                    sender.title = "❤";
-                  }
-                }else{
-                  if(await cancelLikeImgfn(illust_id)){
-                    sender.title = "♡";
+            {
+              type: "button",
+              props: {
+                title: "💛",
+                id: "likeBtn",
+                // bgcolor: $color("#4f95d3"),
+                font: $font("bold", 20),
+                // titleColor: $color("#fff")
+              },
+              layout: function (make, view) {
+                make.width.equalTo(30);
+                make.height.equalTo(30);
+                make.bottom.right.inset(10);
+              },
+              events: {
+                tapped: async function (sender) {
+                  let illust_id = sender.info;
+                  if (sender.title == '💛') {
+                    if (await likeImgfn(illust_id)) {
+                      sender.title = "❤";
+                    }
+                  } else {
+                    if (await cancelLikeImgfn(illust_id)) {
+                      sender.title = "💛";
+                    }
                   }
                 }
               }
-            }
-          },
-          {
-            type: "label",
-            props: {
-              id: "illust_page_count",
-              align: $align.center,
-              bgcolor: $rgba(0, 0, 0, 0.6),
-              textColor: $color("#f5f5f5")
             },
-            layout: function (make, view) {
-              make.width.equalTo(40);
-              make.right.equalTo(0);
+            {
+              type: "label",
+              props: {
+                id: "illust_page_count",
+                align: $align.center,
+                bgcolor: $rgba(0, 0, 0, 0.6),
+                textColor: $color("#f5f5f5")
+              },
+              layout: function (make, view) {
+                make.width.equalTo(40);
+                make.right.equalTo(0);
+              }
             }
-          }
-        ],
-        layout: function (make, view) {
-          make.top.equalTo(60);
-          make.left.right.equalTo(0);
-          // make.bottom.inset(60);
-          make.height.equalTo(view.super);
+          ],
+          
+        }
+      },
+      layout: function (make, view) {
+        make.top.inset(60);
+        make.left.right.equalTo(0);
+        make.bottom.equalTo(0);
+      },
+      events: {
+        didReachBottom: function (sender) {
+          search_page_number++;
+          getSearchList(search_keywords, order_type, search_page_number);
+          sender.endFetchingMore();
         }
       }
-    },
-    layout: function (make, view) {
-      make.top.left.right.equalTo(0);
-      make.height.equalTo(view.super);
-    },
-    events: {
-      didReachBottom: function (sender) {
-        search_page_number++;
-        getSearchList(search_keywords, order_type, search_page_number);
-        sender.endFetchingMore();
+    }, {
+      type: "view",
+      props: {
+        id: "toolBar",
+        bgcolor: $color("#6092cd")
+      },
+      views: [{
+        type: "label",
+        props: {
+          id: 'pageTitle',
+          text:'搜索',
+          textColor: $color('#f5f5f5'),
+          align: $align.center
+        },
+        layout: function (make, view) {
+          make.height.equalTo(40);
+          make.top.equalTo(20);
+          make.width.equalTo(view.super);
+        },
+      }, {
+        type: "button", //关闭按钮
+        props: {
+          title: "X",
+          font: $font("GillSans-Light", 20),
+          bgcolor: $color("clear")
+        },
+        layout: function (make, view) {
+          make.right.inset(20);
+          make.height.equalTo(40);
+          make.top.equalTo(20);
+        },
+        events: {
+          tapped: function (sender) {
+            $app.close(0);
+          }
+        }
+      }],
+      layout: function (make, view) {
+        make.top.left.right.equalTo(0);
+        make.height.equalTo(60);
+      },
+      events: {
+        tapped: function (sender) {}
       }
+    }],
+    props: {
+      navBarHidden: true,
     }
-  }]
-});
+  });
 }
 
 //写入缓存
@@ -276,30 +322,31 @@ async function getlogin(username, password) {
     return $ui.alert("登陆失败!");
   } else {
     $ui.toast("登陆成功!");
-    if(config.debug){ console.log(resp.data);}
-    setCache('loginInfo',resp.data);
-    header.Authorization=`Bearer ${resp.data.response.access_token}`;
+    if (config.debug) {
+      console.log(resp.data);
+    }
+    setCache('loginInfo', resp.data);
+    header.Authorization = `Bearer ${resp.data.response.access_token}`;
   }
 }
 
-function getLoginInfo(){
-  let loginInfo=getCache('loginInfo')
-  if(!loginInfo){
-    getlogin(userName,password);
-  }else{
+function getLoginInfo() {
+  let loginInfo = getCache('loginInfo')
+  if (!loginInfo) {
+    getlogin(userName, password);
+  } else {
     $ui.toast("获取缓存信息成功");
-    header.Authorization=`Bearer ${loginInfo.response.access_token}`;
+    header.Authorization = `Bearer ${loginInfo.response.access_token}`;
     console.log(`Bearer ${loginInfo.response.access_token}`)
   }
 }
 
-
 //下载
-async function downloadPic(url,imgID) {
+async function downloadPic(url, imgID) {
   let resp = await $http.download({
     url: url,
     header: header
   });
-  setImgCache(imgID,resp.data)
+  setImgCache(imgID, resp.data)
   return resp.data;
 }

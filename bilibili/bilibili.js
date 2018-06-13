@@ -125,9 +125,53 @@ function render(listData) {
   $ui.render({
     type: "view",
     props: {
-      title: "首页",
+      navBarHidden:true,
     },
     views: [{
+      type: "view",
+      props: {
+        id: "toolBar",
+        bgcolor: $color("#fa7298")
+      },
+      views: [{
+        type: "label",
+        props: {
+          id: 'pageTitle', //标题
+          text:'首页',
+          textColor: $color('#f5f5f5'),
+          align: $align.center
+        },
+        layout: function (make, view) {
+          make.left.right.equalTo(0);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+      }, {
+        type: "button", //关闭按钮
+        props: {
+          title: "X",
+          font: $font("GillSans-Light", 20),
+          bgcolor: $color("clear")
+        },
+        layout: function (make, view) {
+          make.right.inset(10);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped: function (sender) {
+            $app.close(0);
+          }
+        }
+      }],
+      layout: function (make, view) {
+        make.top.left.right.equalTo(0);
+        make.height.equalTo(60);
+      },
+      events: {
+        tapped: function (sender) {}
+      }
+    },{
         type: "matrix", //九宫格
         props: {
           id: "vedioList",
@@ -285,7 +329,7 @@ function render(listData) {
           }
         },
         layout: function (make, view) {
-          make.top.equalTo(0);
+          make.top.equalTo(60);
           make.left.right.equalTo(0);
           make.bottom.equalTo(-60);
         },
@@ -450,12 +494,56 @@ async function getHotList() {
 function pushView(hotList, pageName) {
   $ui.render({
     props: {
-      title: pageName
+      navBarHidden: true,
     },
     views: [{
       type: "view",
       props: {},
       views: [{
+        type: "view",
+        props: {
+          id: "toolBar",
+          bgcolor: $color("#fa7298")
+        },
+        views: [{
+          type: "label",
+          props: {
+            id: 'pageTitle', //标题
+            text:pageName,
+            textColor: $color('#f5f5f5'),
+            align: $align.center
+          },
+          layout: function (make, view) {
+            make.left.right.equalTo(0);
+            make.top.equalTo(20);
+            make.height.equalTo(40);
+          },
+        }, {
+          type: "button", //关闭按钮
+          props: {
+            title: "X",
+            font: $font("GillSans-Light", 20),
+            bgcolor: $color("clear")
+          },
+          layout: function (make, view) {
+            make.right.inset(10);
+            make.top.equalTo(20);
+            make.height.equalTo(40);
+          },
+          events: {
+            tapped: function (sender) {
+              $app.close(0);
+            }
+          }
+        }],
+        layout: function (make, view) {
+          make.top.left.right.equalTo(0);
+          make.height.equalTo(60);
+        },
+        events: {
+          tapped: function (sender) {}
+        }
+      },{
           type: "matrix",
           props: {
             id: "hotList",
@@ -628,7 +716,8 @@ function pushView(hotList, pageName) {
             }
           },
           layout: function (make, view) {
-            make.top.left.right.equalTo(0);
+            make.top.equalTo(60);
+            make.left.right.equalTo(0);
             make.bottom.equalTo(-60);
           }
         },
@@ -793,9 +882,53 @@ function openUrlInfo(pageTitle) {
   let repliesList = [];
   $ui.push({
     props: {
-      title: pageTitle,
+      navBarHidden: true,
     },
     views: [{
+      type: "view",
+      props: {
+        id: "toolBar",
+        bgcolor: $color("#fa7298")
+      },
+      views: [{
+        type: "label",
+        props: {
+          id: 'pageTitle', //标题
+          text:pageTitle,
+          textColor: $color('#f5f5f5'),
+          align: $align.center
+        },
+        layout: function (make, view) {
+          make.left.right.inset(70);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+      }, {
+        type: "button", //关闭按钮
+        props: {
+          title: "X",
+          font: $font("GillSans-Light", 20),
+          bgcolor: $color("clear")
+        },
+        layout: function (make, view) {
+          make.right.inset(10);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped: function (sender) {
+            $ui.pop();
+          }
+        }
+      }],
+      layout: function (make, view) {
+        make.top.left.right.equalTo(0);
+        make.height.equalTo(60);
+      },
+      events: {
+        tapped: function (sender) {}
+      }
+    },{
         type: "web",
         props: {
           id: "vedioWeb",
@@ -808,7 +941,7 @@ function openUrlInfo(pageTitle) {
           style: ".index__videoPage__src-videoPage-{padding-top:0px;}.player-container .player-box .display .load-layer>img{filter: none;-webkit-filter: none;}.index__player__src-videoPage-player- .index__videoTime__src-videoPage-player-{background-color: rgba(0,0,0,.3)}" //去除头部app推广
         },
         layout: function (make, view) {
-          make.top.equalTo(0);
+          make.top.equalTo(60);
           make.height.equalTo(260);
           make.width.equalTo(view.super);
         }
@@ -822,7 +955,7 @@ function openUrlInfo(pageTitle) {
           align: $align.center
         },
         layout: function (make, view) {
-          make.top.equalTo(270);
+          make.top.equalTo(330);
           make.width.equalTo(view.super);
         }
       },
@@ -833,7 +966,7 @@ function openUrlInfo(pageTitle) {
           bgcolor: $color("#409eff"),
         },
         layout: function (make, view) {
-          make.top.equalTo(300);
+          make.top.equalTo(360);
           make.width.equalTo(160);
           make.height.equalTo(40);
           make.left.equalTo(20);
@@ -864,7 +997,7 @@ function openUrlInfo(pageTitle) {
           bgcolor: $color("#e9799b")
         },
         layout: function (make, view) {
-          make.top.equalTo(300);
+          make.top.equalTo(360);
           make.width.equalTo(160);
           make.height.equalTo(40);
           make.right.equalTo(-20);
@@ -883,7 +1016,7 @@ function openUrlInfo(pageTitle) {
           bgcolor: $color("#909399")
         },
         layout: function (make, view) {
-          make.top.equalTo(350);
+          make.top.equalTo(410);
           make.width.equalTo(160);
           make.height.equalTo(40);
           make.left.equalTo(20);
@@ -901,7 +1034,7 @@ function openUrlInfo(pageTitle) {
           bgcolor: $color("#f48081")
         },
         layout: function (make, view) {
-          make.top.equalTo(350);
+          make.top.equalTo(410);
           make.width.equalTo(160);
           make.height.equalTo(40);
           make.right.equalTo(-20);
@@ -914,7 +1047,7 @@ function openUrlInfo(pageTitle) {
         }
       },
       {
-        type: "matrix",
+        type: "matrix",//评论
         props: {
           columns: 1,
           id: "repliesList", //评论区域
@@ -1011,9 +1144,53 @@ function openUrlInfo(pageTitle) {
           didSelect(sender, indexPath, data) {
             $ui.push({
               props: {
-                title: data.replies_uname.text
+                navBarHidden: true,
               },
               views: [{
+                type: "view",
+                props: {
+                  id: "toolBar",
+                  bgcolor: $color("#fa7298")
+                },
+                views: [{
+                  type: "label",
+                  props: {
+                    id: 'pageTitle', //标题
+                    text:data.replies_uname.text,
+                    textColor: $color('#f5f5f5'),
+                    align: $align.center
+                  },
+                  layout: function (make, view) {
+                    make.left.right.inset(70);
+                    make.top.equalTo(20);
+                    make.height.equalTo(40);
+                  },
+                }, {
+                  type: "button", //关闭按钮
+                  props: {
+                    title: "X",
+                    font: $font("GillSans-Light", 20),
+                    bgcolor: $color("clear")
+                  },
+                  layout: function (make, view) {
+                    make.right.inset(10);
+                    make.top.equalTo(20);
+                    make.height.equalTo(40);
+                  },
+                  events: {
+                    tapped: function (sender) {
+                      $ui.pop();
+                    }
+                  }
+                }],
+                layout: function (make, view) {
+                  make.top.left.right.equalTo(0);
+                  make.height.equalTo(60);
+                },
+                events: {
+                  tapped: function (sender) {}
+                }
+              },{
                   type: "text",
                   props: {
                     text: data.replies_content_message.text,
@@ -1023,36 +1200,8 @@ function openUrlInfo(pageTitle) {
                     editable: false
                   },
                   layout: function (make, view) {
-                    make.left.right.top.bottom.inset(20);
-                  }
-                },
-                {
-                  type: "view",
-                  props: {
-                    bgcolor: $color("#999"),
-                    alpha: 0.7,
-                    radius: 30 //圆角,
-                  },
-                  views: [{
-                    type: "label",
-                    props: {
-                      text: "←",
-                      align: $align.center, //返回按钮
-                      textColor: $color("#fff")
-                    },
-                    layout: function (make, view) {
-                      make.center.equalTo(view.super);
-                    }
-                  }],
-                  layout: function (make, view) {
-                    make.right.equalTo(-20);
-                    make.bottom.equalTo(-90);
-                    make.size.equalTo($size(60, 60));
-                  },
-                  events: {
-                    tapped: function (sender) {
-                      $ui.pop();
-                    }
+                    make.top.equalTo(80);
+                    make.left.right.bottom.inset(20);
                   }
                 }
               ]
@@ -1060,38 +1209,9 @@ function openUrlInfo(pageTitle) {
           }
         },
         layout: function (make, view) {
-          make.top.equalTo(400);
+          make.top.equalTo(460);
           make.left.right.equalTo(0);
           make.bottom.equalTo(0);
-        }
-      },
-      {
-        type: "view",
-        props: {
-          bgcolor: $color("#999"), //返回按钮
-          alpha: 0.7,
-          radius: 30 //圆角,
-        },
-        views: [{
-          type: "label",
-          props: {
-            text: "←",
-            align: $align.center,
-            textColor: $color("#fff")
-          },
-          layout: function (make, view) {
-            make.center.equalTo(view.super);
-          }
-        }],
-        layout: function (make, view) {
-          make.right.equalTo(-20);
-          make.bottom.equalTo(-90);
-          make.size.equalTo($size(60, 60));
-        },
-        events: {
-          tapped: function (sender) {
-            $ui.pop();
-          }
         }
       }
     ],

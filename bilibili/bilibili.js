@@ -1,4 +1,4 @@
-const version = 1.03; //版本号
+const version = 1.04; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 // https://app.bilibili.com/x/v2/search?build=6199&keyword=%E7%88%B1&pn=1&ps=20  搜索

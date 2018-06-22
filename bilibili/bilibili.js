@@ -1,4 +1,4 @@
-const version = 1.04; //版本号
+const version = 1.05; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 // https://app.bilibili.com/x/v2/search?build=6199&keyword=%E7%88%B1&pn=1&ps=20  搜索
@@ -134,6 +134,23 @@ function render(listData) {
         bgcolor: $color("#fa7298")
       },
       views: [{
+        type: "button", //关闭按钮
+        props: {
+          title: "",
+          font: $font("GillSans-Light", 20),
+          bgcolor: $color("clear")
+        },
+        layout: function (make, view) {
+          make.left.inset(10);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped: function (sender) {
+            $app.close(0);
+          }
+        }
+      },{
         type: "label",
         props: {
           id: 'pageTitle', //标题
@@ -149,7 +166,7 @@ function render(listData) {
       }, {
         type: "button", //关闭按钮
         props: {
-          title: "X",
+          title: "",
           font: $font("GillSans-Light", 20),
           bgcolor: $color("clear")
         },
@@ -506,6 +523,23 @@ function pushView(hotList, pageName) {
           bgcolor: $color("#fa7298")
         },
         views: [{
+          type: "button", //关闭按钮
+          props: {
+            title: "",
+            font: $font("GillSans-Light", 20),
+            bgcolor: $color("clear")
+          },
+          layout: function (make, view) {
+            make.left.inset(10);
+            make.top.equalTo(20);
+            make.height.equalTo(40);
+          },
+          events: {
+            tapped: function (sender) {
+              $app.close(0);
+            }
+          }
+        },{
           type: "label",
           props: {
             id: 'pageTitle', //标题
@@ -521,7 +555,7 @@ function pushView(hotList, pageName) {
         }, {
           type: "button", //关闭按钮
           props: {
-            title: "X",
+            title: "",
             font: $font("GillSans-Light", 20),
             bgcolor: $color("clear")
           },
@@ -891,6 +925,23 @@ function openUrlInfo(pageTitle) {
         bgcolor: $color("#fa7298")
       },
       views: [{
+        type: "button", //关闭按钮
+        props: {
+          title: "",
+          font: $font("GillSans-Light", 20),
+          bgcolor: $color("clear")
+        },
+        layout: function (make, view) {
+          make.left.inset(10);
+          make.top.equalTo(20);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped: function (sender) {
+            $ui.pop();
+          }
+        }
+      },{
         type: "label",
         props: {
           id: 'pageTitle', //标题
@@ -906,7 +957,7 @@ function openUrlInfo(pageTitle) {
       }, {
         type: "button", //关闭按钮
         props: {
-          title: "X",
+          title: "",
           font: $font("GillSans-Light", 20),
           bgcolor: $color("clear")
         },
@@ -938,7 +989,7 @@ function openUrlInfo(pageTitle) {
           canGoForward: false,
           canGoBack: false,
           url: `https://m.bilibili.com/video/av${aid}.html`,
-          style: ".index__videoPage__src-videoPage-{padding-top:0px;}.player-container .player-box .display .load-layer>img{filter: none;-webkit-filter: none;}.index__player__src-videoPage-player- .index__videoTime__src-videoPage-player-{background-color: rgba(0,0,0,.3)}" //去除头部app推广
+          style: ".index__player__src-videoPage-player- .index__finishLayer__src-videoPage-player- .index__container__src-videoPage-player- .index__video__src-videoPage-player- .index__content__src-videoPage-player- .index__button__src-videoPage-player-{display:none}.index__player__src-videoPage-player- .index__finishLayer__src-videoPage-player- .index__container__src-videoPage-player- .index__buttons__src-videoPage-player-{display:none}.index__videoPage__src-videoPage-{padding-top:0px;}.player-container .player-box .display .load-layer>img{filter: none;-webkit-filter: none;}.index__player__src-videoPage-player- .index__videoTime__src-videoPage-player-{background-color: rgba(0,0,0,.3)}" //去除头部app推广
         },
         layout: function (make, view) {
           make.top.equalTo(60);
@@ -1147,12 +1198,46 @@ function openUrlInfo(pageTitle) {
                 navBarHidden: true,
               },
               views: [{
+                type: "button", //关闭按钮
+                props: {
+                  title: "",
+                  font: $font("GillSans-Light", 20),
+                  bgcolor: $color("clear")
+                },
+                layout: function (make, view) {
+                  make.left.inset(10);
+                  make.top.equalTo(20);
+                  make.height.equalTo(40);
+                },
+                events: {
+                  tapped: function (sender) {
+                    $ui.pop();
+                  }
+                }
+              },{
                 type: "view",
                 props: {
                   id: "toolBar",
                   bgcolor: $color("#fa7298")
                 },
                 views: [{
+                  type: "button", //关闭按钮
+                  props: {
+                    title: "",
+                    font: $font("GillSans-Light", 20),
+                    bgcolor: $color("clear")
+                  },
+                  layout: function (make, view) {
+                    make.keft.inset(10);
+                    make.top.equalTo(20);
+                    make.height.equalTo(40);
+                  },
+                  events: {
+                    tapped: function (sender) {
+                      $ui.pop();
+                    }
+                  }
+                },{
                   type: "label",
                   props: {
                     id: 'pageTitle', //标题
@@ -1168,7 +1253,7 @@ function openUrlInfo(pageTitle) {
                 }, {
                   type: "button", //关闭按钮
                   props: {
-                    title: "X",
+                    title: "",
                     font: $font("GillSans-Light", 20),
                     bgcolor: $color("clear")
                   },

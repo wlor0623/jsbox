@@ -1918,4 +1918,3 @@ function saveImage(imgUrl) {
   });
 }
 
-

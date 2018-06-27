@@ -1,6 +1,8 @@
-const version = 1.06; //版本号
+const version = 1.07; //版本号
 //检测扩展更新
 scriptVersionUpdate();
+
+
 const ridArr = [0, 1, 3, 4, 5, 36, 119, 129]; //["全站", "动画",'音乐','游戏','娱乐','科技','鬼畜','舞蹈'],
 let listData = []; //首页数据
 let firstLoad = true; //首次加载
@@ -14,16 +16,16 @@ let firstSearch = true;
 let vedioListArr = [];
 let searchRanking = 1;
 let rid = 36; //排行id
-let rankActiveIndex = 0;
+let rankActiveIndex = 0;//排行榜选中项
 
+let mainColor=$color("#fa7298");
 
 // https://app.bilibili.com/x/v2/search?build=6199&keyword=%E7%88%B1&pn=1&ps=20  搜索
-const vedioListUrl = 'https://app.bilibili.com/x/feed/index?build=6190&network=wifi&platform=ios'; //列表
+const vedioListUrl = 'https://app.bilibili.com/x/feed/index?build=6190&network=wifi&platform=ios'; //列表  mobile&
 const repliesListUrl = 'https://api.bilibili.com/x/v2/reply?plat=3&pn=1&ps=20&sort=0&type=1'; //评论
 // https://app.bilibili.com/x/v2/rank/region?pn=0&ps=100&rid=4
 //https://api.bilibili.com/x/article/categories     //分类?
 // https://bangumi.bilibili.com/appindex/cinema/fall?platform=ios&region=index  //落 首页 电影
-// https://bangumi.bilibili.com/appindex/follow_index_mine?access_key=611aaad5fb61b6494ce39b6d6ff9d4f3&pagesize=6   下一个索引
 // https://bangumi.bilibili.com/appindex/cinema?platform=ios   //电影院
 // https://bangumi.bilibili.com/appindex/follow_index_fall?mobi_app=iphone&pagesize=30   //指数
 //https://api.live.bilibili.com/room/v1/AppIndex/getAllList?device=phone&platform=ios&scale=3   //房间  规模
@@ -135,7 +137,7 @@ function renderIndex(listData) {
         type: "view",
         props: {
           id: "toolBar",
-          bgcolor: $color("#fa7298")
+          bgcolor: mainColor
         },
         views: [{
           type: "button", //关闭按钮
@@ -264,7 +266,7 @@ function renderIndex(listData) {
                           font: $font(12),
                           align: $align.center,
                           textColor: $color("#f5f5f5"),
-                          bgcolor: $rgba(242, 93, 142, 0.8)
+                          bgcolor: mainColor
                         },
                         layout: function (make, view) {
                           make.top.equalTo(0);
@@ -284,7 +286,7 @@ function renderIndex(listData) {
                     type: "label", //视频标题
                     props: {
                       id: "cover_duration_title",
-                      font: $font(12),
+                      font: $font('bold',14),
                       lines: 0,
                       align: $align.center
                     },
@@ -298,7 +300,7 @@ function renderIndex(listData) {
                     type: "label", //视频up主
                     props: {
                       id: "cover_item_name",
-                      font: $font("Avenir-Light", 14),
+                      font: $font("Avenir-Light", 12),
                       align: $align.left
                     },
                     layout: function (make, view) {
@@ -320,7 +322,7 @@ function renderIndex(listData) {
                       make.top.equalTo(70);
                       make.left.inset(5);
                       make.height.equalTo(20);
-                      make.width.greaterThanOrEqualTo(40);
+                      make.width.greaterThanOrEqualTo(60);
                     }
                   },
                   {
@@ -402,7 +404,7 @@ function renderIndex(listData) {
                 });
                 break;
               case 3:
-                getHotList(rid); //排行榜
+              getRankList(rid); //排行榜
                 break;
               default:
                 break;
@@ -447,7 +449,7 @@ function renderIndex(listData) {
 }
 
 // 获取排行榜数据
-async function getHotList(rid) {
+async function getRankList(rid) {
   let hotListUrl = `https://app.bilibili.com/x/v2/rank/region?rid=${rid}`; //排行榜
   if (hotList.length != 0) {
     return pushRankView(hotList, "排行榜");
@@ -527,7 +529,7 @@ function pushRankView(hotList, pageName) {
           type: "view",
           props: {
             id: "toolBar",
-            bgcolor: $color("#fa7298")
+            bgcolor: mainColor
           },
           views: [{
             type: "button", //关闭按钮
@@ -599,7 +601,7 @@ function pushRankView(hotList, pageName) {
               rid = ridArr[index];
               rankActiveIndex = index;
               hotList.length = 0;
-              getHotList(rid);
+              getRankList(rid);
             }
           }
         }, {
@@ -649,7 +651,7 @@ function pushRankView(hotList, pageName) {
                   type: "label", //排名
                   props: {
                     id: "cover_item_ranking",
-                    bgcolor: $color("#e9799b"),
+                    bgcolor:mainColor,
                     align: $align.center,
                     textColor: $color("#fff"),
                     font: $font(14)
@@ -671,10 +673,11 @@ function pushRankView(hotList, pageName) {
                       props: {
                         id: "cover_duration_title", //标题
                         align: $align.center,
-                        font: $font(14)
+                        font: $font("bold", 14),
                       },
                       layout: function (make, view) {
-                        make.top.left.right.equalTo(0);
+                        make.top.equalTo(0);
+                        make.left.right.inset(5)
                         make.height.equalTo(30);
                       }
                     },
@@ -815,7 +818,7 @@ function pushRankView(hotList, pageName) {
                   });
                   break;
                 case 3:
-                  getHotList(rid); //排行榜
+                getRankList(rid); //排行榜
                   break;
                 default:
                   break;
@@ -862,6 +865,7 @@ function pushRankView(hotList, pageName) {
     }]
   });
 }
+
 //分类渲染
 function pushClassifyView(){
   $ui.render({
@@ -875,7 +879,7 @@ function pushClassifyView(){
           type: "view",
           props: {
             id: "toolBar",
-            bgcolor: $color("#fa7298")
+            bgcolor: mainColor
           },
           views: [{
             type: "button", //关闭按钮
@@ -974,7 +978,7 @@ function pushClassifyView(){
                   });
                   break;
                 case 3:
-                  getHotList(rid); //排行榜
+                getRankList(rid); //排行榜
                   break;
                 default:
                   break;
@@ -1004,7 +1008,7 @@ function pushSearchView(hotList, pageName){
           type: "view",
           props: {
             id: "toolBar",
-            bgcolor: $color("#fa7298")
+            bgcolor: mainColor
           },
           views: [{
             type: "button", //关闭按钮
@@ -1105,7 +1109,7 @@ function pushSearchView(hotList, pageName){
                   type: "label", //排名
                   props: {
                     id: "cover_item_ranking",
-                    bgcolor: $color("#e9799b"),
+                    bgcolor:mainColor,
                     align: $align.center,
                     textColor: $color("#fff"),
                     font: $font(14)
@@ -1127,7 +1131,7 @@ function pushSearchView(hotList, pageName){
                       props: {
                         id: "cover_duration_title", //标题
                         align: $align.center,
-                        font: $font(14)
+                        font: $font('bold',14)
                       },
                       layout: function (make, view) {
                         make.top.left.right.equalTo(0);
@@ -1271,7 +1275,7 @@ function pushSearchView(hotList, pageName){
                   });
                   break;
                 case 3:
-                  getHotList(rid); //排行榜
+                getRankList(rid); //排行榜
                   break;
                 default:
                   break;
@@ -1406,7 +1410,7 @@ function openUrlInfo(pageTitle) {
         type: "view",
         props: {
           id: "toolBar",
-          bgcolor: $color("#fa7298")
+          bgcolor: mainColor
         },
         views: [{
           type: "button", //关闭按钮
@@ -1469,6 +1473,7 @@ function openUrlInfo(pageTitle) {
           scrollEnabled: false,
           canGoForward: false,
           canGoBack: false,
+          ua:'Mozilla/5.0 (Linux; Android 6.0; PRO 6 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/53.0.2785.49 Mobile BiliApp/6.2 TBS/043221 Safari/537.36 V1_AND_SQ_7.0.0_676_YYB_D QQ/7.0.0.3135 NetType/WIFI WebP/0.3.0 Pixel/1080',
           url: `https://m.bilibili.com/video/av${aid}.html`,
           style: ".index__videoPage__src-videoPage-{padding-top:0px;}.player-container .player-box .display .load-layer>img{filter: none;-webkit-filter: none;}.index__player__src-videoPage-player- .index__videoTime__src-videoPage-player-{background-color: rgba(0,0,0,.3)}" //去除头部app推广
         },
@@ -1597,7 +1602,7 @@ function openUrlInfo(pageTitle) {
                 type: "label",
                 props: {
                   id: "replies_content_message", //内容
-                  font: $font(12),
+                  font: $font(14),
                   lines: 4,
                   align: $align.center
                 },
@@ -1605,7 +1610,7 @@ function openUrlInfo(pageTitle) {
                   make.left.equalTo(5);
                   make.right.equalTo(-5);
                   make.height.equalTo(60);
-                  make.top.equalTo(0);
+                  make.top.equalTo(5);
                 }
               },
               {
@@ -1626,8 +1631,7 @@ function openUrlInfo(pageTitle) {
                 type: "label",
                 props: {
                   id: "replies_uname", //用户名
-                  font: $font(12),
-                  lines: 4,
+                  font: $font('bold',12),
                   align: $align.right
                 },
                 layout: function (make, view) {
@@ -1641,8 +1645,7 @@ function openUrlInfo(pageTitle) {
                 type: "label",
                 props: {
                   id: "replies_ctime", //时间
-                  font: $font(10),
-                  lines: 4,
+                  font: $font('bold',10),
                   align: $align.right,
                   textColor: $color("#838fa7")
                 },
@@ -1657,8 +1660,7 @@ function openUrlInfo(pageTitle) {
                 type: "label",
                 props: {
                   id: "replies_like", //赞
-                  font: $font(12),
-                  lines: 4,
+                  font: $font('bold',14),
                   textColor: $color("#f56c6c"),
                   align: $align.left
                 },
@@ -1682,7 +1684,7 @@ function openUrlInfo(pageTitle) {
                 type: "view",
                 props: {
                   id: "toolBar",
-                  bgcolor: $color("#fa7298")
+                  bgcolor: mainColor
                 },
                 views: [{
                   type: "button", //关闭按钮
@@ -1777,6 +1779,7 @@ function getCommont(repliesList) {
       var data = res.data;
       var hots = data.hots; //热门
       var replies = data.replies; //回复
+      
       //热评
       for (let i = 0; i < 3; i++) {
         changeReplies(repliesList, hots, i);
@@ -1917,4 +1920,5 @@ function saveImage(imgUrl) {
     }
   });
 }
+
 

@@ -1,4 +1,4 @@
-const version = 1.07; //版本号
+const version = 1.08; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 
@@ -1479,7 +1479,7 @@ function openUrlInfo(pageTitle) {
         },
         layout: function (make, view) {
           make.top.equalTo(60);
-          make.height.equalTo(260);
+          make.height.equalTo(240);
           make.width.equalTo(view.super);
         }
       },
@@ -1487,13 +1487,14 @@ function openUrlInfo(pageTitle) {
         type: "label",
         props: {
           text: pageTitle,
-          font: $font(12),
+          font: $font(14),
           lines: 4,
-          align: $align.center
+          align: $align.center,
         },
         layout: function (make, view) {
-          make.top.equalTo(330);
+          make.top.equalTo(300);
           make.width.equalTo(view.super);
+          make.height.equalTo(60);
         }
       },
       {
@@ -1864,8 +1865,8 @@ function ms_To_mdhms(timestamp) {
       date.getMonth() + 1) + "-";
   D = date.getDate() < 10 ? "0" + date.getDate() : date.getMonth() + 1;
   h = " " + date.getHours() + ":";
-  m = date.getMinutes() + ":";
-  s = date.getSeconds();
+  m = date.getMinutes()<10?`0${date.getMinutes()}:`:`${date.getMinutes()}:`
+  s = date.getSeconds()<10?`0${date.getSeconds()}`:date.getSeconds();
   return Y + M + D + h + m + s;
 }
 

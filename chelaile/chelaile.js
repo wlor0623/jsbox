@@ -1,5 +1,5 @@
 
-const version = 1.0;//版本号
+const version = 0.9;//版本号
 //检测扩展更新
 scriptVersionUpdate();
 getLocation();
@@ -23,13 +23,13 @@ async function getCity(lat, lng) {
   let cityId = data.jsonr.data.localCity.cityId;
   pageTitle=`${data.jsonr.data.localCity.cityName}交通`;
   let cityName = $text.URLEncode(data.jsonr.data.localCity.cityName);
-  // getWeather()
+  getWeather(cityName)
   renderMap(lat, lng, cityId, cityName)
 }
 
-function getWeather() {
+function getWeather(cityName) {
   $http.get({
-    url: 'https://www.sojson.com/open/api/weather/json.shtml?city=%E6%B7%B1%E5%9C%B3%E5%B8%82',
+    url: `https://www.sojson.com/open/api/weather/json.shtml?city=${cityName}`,
     handler: function (resp) {
       let data = resp.data;
       tip = `${data.data.forecast[0].notice}`;
@@ -182,7 +182,7 @@ function scriptVersionUpdate() {
           actions: [{
               title: "更新",
               handler: function () {
-                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=车来了网页版&icon=icon_001.png`;
+                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=车来了网页版&icon=icon_087.png`;
                 $app.openURL(encodeURI(url));
                 $app.close();
               }

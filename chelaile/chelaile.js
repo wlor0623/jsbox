@@ -1,5 +1,5 @@
 
-const version = 1.0;//版本号
+const version = 0.9;//版本号
 //检测扩展更新
 scriptVersionUpdate();
 getLocation();
@@ -182,7 +182,7 @@ function scriptVersionUpdate() {
           actions: [{
               title: "更新",
               handler: function () {
-                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=%e8%bd%a6%e6%9d%a5%e4%ba%86&icon=icon_001.png`;
+                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=车来了网页版&icon=icon_001.png`;
                 $app.openURL(encodeURI(url));
                 $app.close();
               }

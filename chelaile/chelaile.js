@@ -1,5 +1,5 @@
 
-const version = 0.9;//版本号
+const version = 1.0;//版本号
 //检测扩展更新
 scriptVersionUpdate();
 getLocation();

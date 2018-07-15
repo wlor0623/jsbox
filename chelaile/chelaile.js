@@ -1,7 +1,8 @@
-getLocation();
+
 const version = 1.0;//版本号
 //检测扩展更新
 scriptVersionUpdate();
+getLocation();
 const phoneHeight=$device.info.screen.height
 var tip = "";
 var weather = "";
@@ -181,7 +182,7 @@ function scriptVersionUpdate() {
           actions: [{
               title: "更新",
               handler: function () {
-                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/bilibili.js&name=bilibili&icon=icon_014.png`;
+                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=%e8%bd%a6%e6%9d%a5%e4%ba%86&icon=icon_001.png`;
                 $app.openURL(encodeURI(url));
                 $app.close();
               }

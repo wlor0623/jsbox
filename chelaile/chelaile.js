@@ -1,8 +1,8 @@
 const version = 1.0; //版本号
 //检测扩展更新
 scriptVersionUpdate();
+
 getLocation();
-const phoneHeight = $device.info.screen.height
 var tip = "";
 var weather = "";
 var pageTitle = "车来了";
@@ -41,7 +41,7 @@ function getWeather(cityName) {
 }
 
 function renderMap(lat, lng, cityId, cityName) {
-  let url = `http://web.chelaile.net.cn/ch5/index.html?utm_source=webapp_meizu_map&gpstype=wgs&src=webapp_meizu_map&utm_medium=menu&hideFooter=1&cityName=${cityName}&cityId=${cityId}&supportSubway=1&cityVersion=0&lat=${lat}&lng=${lng}#!/linearound`;
+  const url = `http://web.chelaile.net.cn/ch5/index.html?utm_source=webapp_meizu_map&gpstype=wgs&src=webapp_meizu_map&utm_medium=menu&hideFooter=1&cityName=${cityName}&cityId=${cityId}&supportSubway=1&cityVersion=0&lat=${lat}&lng=${lng}#!/linearound`;
   $ui.render({
     props: {
       type: "view",
@@ -58,7 +58,7 @@ function renderMap(lat, lng, cityId, cityName) {
           font: $font(20)
         },
         layout: function (make, view) {
-          make.top.inset(20);
+          make.top.inset(22);
           make.right.inset(0);
           make.height.equalTo(40)
           make.width.equalTo(80);
@@ -94,7 +94,7 @@ function renderMap(lat, lng, cityId, cityName) {
           id: "weather",
           text: weather,
           lines: 0,
-          hidden:true,
+          hidden: true,
           textColor: $color('#fff'),
           align: $align.center
         },
@@ -107,7 +107,7 @@ function renderMap(lat, lng, cityId, cityName) {
         type: "label",
         props: {
           id: "tips",
-          hidden:true,
+          hidden: true,
           text: tip,
           lines: 0,
           textColor: $color('#fff'),
@@ -122,7 +122,7 @@ function renderMap(lat, lng, cityId, cityName) {
         type: "label",
         props: {
           id: "Smile",
-          hidden:true,
+          hidden: true,
           text: '(σ・ω・)σ(',
           lines: 0,
           textColor: $color('#fff'),
@@ -139,18 +139,18 @@ function renderMap(lat, lng, cityId, cityName) {
         props: {
           url: url,
           id: "webView",
-          style: ".page-list .ico-chelaile-container{display:none;}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}"
+          style: ".page-list .ico-chelaile-container{display:none;}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}.around-refresh{background-color: #508aeb}"
         },
         layout: function (make, view) {
           make.top.inset(60);
           make.left.right.equalTo(0);
-          make.height.equalTo(phoneHeight - 40)
+          make.bottom.equalTo(20);
         },
         events: {
           didFinish: function (sender, navigation) {
-            $('Smile').hidden=false;
-            $('tips').hidden=false;
-            $('weather').hidden=false;
+            $('Smile').hidden = false;
+            $('tips').hidden = false;
+            $('weather').hidden = false;
             sender.transparent = true;
           },
         }

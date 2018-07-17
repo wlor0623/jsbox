@@ -173,7 +173,7 @@ function scriptVersionUpdate() {
           actions: [{
               title: "更新",
               handler: function () {
-                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=车来了网页版&icon=icon_001.png`;
+                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/chelaile/chelaile.js&name=车来了网页版&icon=icon_087.png`;
                 $app.openURL(encodeURI(url));
                 $app.close();
               }

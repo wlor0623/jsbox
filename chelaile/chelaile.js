@@ -1,30 +1,35 @@
-const version = 1.0; //版本号
+const version = 1.1; //版本号
 //检测扩展更新
 scriptVersionUpdate();
-
-getLocation();
+$app.validEnv = $env.app
 var tip = "";
 var weather = "";
-var pageTitle = "车来了";
+var pageTitle = "";
+var mainColor = "#508aeb";
+var screenHeight = $device.info.screen.height - 40;
+getLocation();
 
 function getLocation() {
   $location.fetch({
     handler: function (resp) {
       let lat = resp.lat;
       let lng = resp.lng;
+      $location.stopUpdates();
       getCity(lat, lng);
     }
   });
 }
 
 async function getCity(lat, lng) {
-  let resp = await $http.get(`https://api.chelaile.net.cn/goocity/city!localCity.action?s=IOS&gpsAccuracy=65.000000&gpstype=wgs&push_open=1&vc=10554&lat=${lat}&lng=${lng}`)
+  let resp = await $http.get(
+    `https://api.chelaile.net.cn/goocity/city!localCity.action?s=IOS&gpsAccuracy=65.000000&gpstype=wgs&push_open=1&vc=10554&lat=${lat}&lng=${lng}`
+  );
   let data = JSON.parse(resp.data.replace("**YGKJ", "").replace("YGKJ##", ""));
   let cityId = data.jsonr.data.localCity.cityId;
   pageTitle = ` ${data.jsonr.data.localCity.cityName}市`;
   let cityName = $text.URLEncode(data.jsonr.data.localCity.cityName);
-  getWeather(cityName)
-  renderMap(lat, lng, cityId, cityName)
+  getWeather(cityName);
+  renderMap(lat, lng, cityId, cityName);
 }
 
 function getWeather(cityName) {
@@ -33,11 +38,11 @@ function getWeather(cityName) {
     handler: function (resp) {
       let data = resp.data;
       tip = `${data.data.forecast[0].notice}`;
-      weather = `${data.data.forecast[0].type} : ${data.data.wendu}℃`
-      $('tips').text = tip;
-      $('weather').text = weather;
+      weather = `${data.data.forecast[0].type} : ${data.data.wendu}℃`;
+      $("tips").text = tip;
+      $("weather").text = weather;
     }
-  })
+  });
 }
 
 function renderMap(lat, lng, cityId, cityName) {
@@ -46,25 +51,22 @@ function renderMap(lat, lng, cityId, cityName) {
     props: {
       type: "view",
       navBarHidden: true,
-      scrollEnabled: false,
-      bgcolor: $color("#508aeb")
+      bgcolor: $color(mainColor)
     },
     views: [{
         type: "label",
         props: {
-          text: "关闭",
-          textColor: $color('#fff'),
-          align: $align.center,
-          font: $font(20)
+          text: "",
+          id: "close",
         },
-        layout: function (make, view) {
-          make.top.inset(22);
+        layout: function (make) {
+          make.top.inset(30);
           make.right.inset(0);
-          make.height.equalTo(40)
+          make.height.equalTo(30);
           make.width.equalTo(80);
         },
         events: {
-          tapped: function (sender) {
+          tapped: function () {
             $app.close(0);
           }
         }
@@ -73,65 +75,69 @@ function renderMap(lat, lng, cityId, cityName) {
         type: "button",
         props: {
           title: pageTitle,
-          textColor: $color('#fff'),
+          id: "cityName",
+          textColor: $color("#fff"),
           bgcolor: $color("clear"),
           align: $align.center,
-          font: $font(24),
+          font: $font(20)
         },
-        layout: function (make, view) {
-          make.top.inset(20);
+        layout: function (make) {
+          make.top.inset(30);
           make.left.inset(15);
-          make.height.equalTo(40)
+          make.height.equalTo(30);
         },
         events: {
-          tapped: function (sender) {
+          tapped: function () {
             getLocation();
           }
         }
-      }, {
+      },
+      {
         type: "label",
         props: {
           id: "weather",
           text: weather,
           lines: 0,
           hidden: true,
-          textColor: $color('#fff'),
+          textColor: $color("#fff"),
           align: $align.center
         },
         layout: function (make, view) {
           make.width.equalTo(view.super);
           make.height.equalTo(30);
-          make.top.equalTo(60)
+          make.top.equalTo(60);
         }
-      }, {
+      },
+      {
         type: "label",
         props: {
           id: "tips",
           hidden: true,
           text: tip,
           lines: 0,
-          textColor: $color('#fff'),
+          textColor: $color("#fff"),
           align: $align.center
         },
         layout: function (make, view) {
           make.width.equalTo(view.super);
           make.height.equalTo(30);
-          make.top.equalTo(90)
+          make.top.equalTo(90);
         }
-      }, {
+      },
+      {
         type: "label",
         props: {
           id: "Smile",
           hidden: true,
-          text: '(σ・ω・)σ(',
+          text: "(σ・ω・)σ(",
           lines: 0,
-          textColor: $color('#fff'),
+          textColor: $color("#fff"),
           align: $align.center
         },
         layout: function (make, view) {
           make.width.equalTo(view.super);
           make.height.equalTo(30);
-          make.top.equalTo(120)
+          make.top.equalTo(120);
         }
       },
       {
@@ -139,23 +145,25 @@ function renderMap(lat, lng, cityId, cityName) {
         props: {
           url: url,
           id: "webView",
-          style: ".page-list .ico-chelaile-container{display:none;}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}.around-refresh{background-color: #508aeb}"
+          style: `.f-11,.f-12,.f-13{font-size:14px !important;}.container{max-width:none}.page-list .ico-chelaile-container{display:none;}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}.around-refresh{background-color: ${mainColor}}.page-list .div-imitate-input{text-align: center;}`
         },
         layout: function (make, view) {
-          make.top.inset(60);
+          make.top.equalTo($('cityName').bottom);
           make.left.right.equalTo(0);
-          make.bottom.equalTo(20);
+          make.height.equalTo(screenHeight)
         },
         events: {
-          didFinish: function (sender, navigation) {
-            $('Smile').hidden = false;
-            $('tips').hidden = false;
-            $('weather').hidden = false;
-            sender.transparent = true;
-          },
+          didFinish: function (sender) {
+            $("Smile").hidden = false;
+            $("tips").hidden = false;
+            $("weather").hidden = false;
+            $delay(1, function() {
+              sender.transparent = true;
+            })
+          }
         }
       },
-    ],
+    ]
   });
 }
 

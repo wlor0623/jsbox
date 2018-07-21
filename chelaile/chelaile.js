@@ -1,4 +1,4 @@
-const version = 1.2; //版本号
+const version = 1.3; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 $app.validEnv = $env.app;
@@ -131,7 +131,7 @@ function renderMap(lat, lng, cityId, cityName) {
         props: {
           url: url,
           id: "webView",
-          style: `.container{max-width:none}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}.around-refresh{background-color: ${mainColor}}.page-list .div-imitate-input{text-align: center;}`
+          style: `.detail__bottom.show-fav .swap-container, .detail__bottom.show-fav .fav-container, .detail__bottom.show-fav .ads, .detail__bottom.show-fav .same-station-container, .detail__bottom.show-fav .refresh-container{background-color:transparent !important}.container{max-width:none}.page-list .switch-city{display:none;}.page-list .div-imitate-search-ui{padding:9px;}.around-refresh{background-color: ${mainColor}}.page-list .div-imitate-input{text-align: center;}`
         },
         layout: function(make, view) {
           make.top.equalTo($("cityName").bottom);

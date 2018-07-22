@@ -1,243 +1,183 @@
-const version = 1.01; //版本号
+const version = 1.1; //版本号
 scriptVersionUpdate()
-const urls = [{
-    name: "磁力猫",
-    pattern: "http://www.cilimao.me/api/search?size=10&sortDirections=desc&page=0&word="
-  },
-  {
-    name: "种子搜",
-    pattern: "http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&page=1&keyword="
-  },
-  {
-    name: "磁力吧",
-    pattern: "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&page=1&keyword="
-  },
-  {
-    name: "BT兔子",
-    pattern: "http://bt.xiandan.in/api/search?source=BT%E5%85%94%E5%AD%90&page=1&keyword="
-  }
+const urls = ["http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&page=1",
+  "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&page=1",
+  "http://bt.xiandan.in/api/search?source=BT%E5%85%94%E5%AD%90&page=1",
+  "http://bt.xiandan.in/api/search?source=BTDB&page=1",
+  "http://bt.xiandan.in/api/search?source=BT4G&page=1"
 ];
-let nameList = [];
-let dIndex = 0;
-let texts = "";
-let query = $context.query;
-let pageNum=0;
-for (let i = 0; i < urls.length; i++) {
-  nameList[i] = urls[i].name;
-}
-if (query.fhcode) {
-  search(dIndex, query.fhcode);
-} else {
-  clipboardDetect();
+var allArr = [];
+var magnetArr = [];
+var pageTitle="";
+inputpop();
+async function inputpop() {
+  $input.text({
+    type: $kbType.url,
+    placeholder: "输入内容",
+    handler: function (text) {
+      pageTitle=text;
+      text = encodeURI(text)
+      toSearh(text);
+    }
+  })
 }
 
-// 弹出
-function inputpop() {
-  $input.text({
-    handler: function (text) {
-      texts = encodeURI(text);
-      //如果直接按完成 则获取剪贴板内容搜索
-      if (texts == "") {
-        let texts = $clipboard.text;
-        return search(dIndex, texts);
-      } else {
-        //如果输入了内容
-        search(dIndex, texts);
-      }
-    }
-  });
+async function toSearh(text) {
+  $ui.loading(true)
+  await search(text)
 }
-// 搜索
-function search(dIndex, word) {
-  let rowsData = [];
-  //加载提示
-  $ui.loading("加载中...");
-  $http.get({
-    url: `${urls[dIndex].pattern}${word}`
-  }).then(function (resp) {
-    var data = resp.data;
-    $ui.loading(false);
-    if (dIndex == 0) {
-      let item = data.data.result.content;
-      for (let i = 0; i < item.length; i++) {
-        let obj = {};
-        obj.title = {};
-        obj.content = {};
-        obj.magnet = {};
-        obj.date = {};
-        obj.title.text = item[i].title;
-        let size = "";
-        if ((item[i].content_size / 1048576).toFixed(2) < 1) {
-          size = "百度网盘";
-        } else {
-          size = (item[i].content_size / 1048576).toFixed(2) + "MB";
+
+async function search(text) {
+  for (var i = 0; i < urls.length; i++) {
+    let resp = await $http.get({
+      url: `${urls[i]}&keyword=${text}`
+    })
+    let data = resp.data.results;
+    for (let i in data) {
+      if (magnetArr.indexOf(data[i].magnet) == -1) {
+        let obj = {
+          name: {
+            text: data[i].name
+          },
+          magnet: {
+            text: data[i].magnet
+          },
+          count: {
+            text: data[i].count
+          },
+          formatSize: {
+            text: data[i].formatSize
+          }
         }
-        obj.content.text = size;
-        let magnet = "";
-        if ((item[i].content_size / 1048576).toFixed(2) < 1) {
-          magnet = "https://pan.baidu.com/s/" + item[i].shorturl;
-        } else {
-          magnet = "magnet:?xt=urn:btih:" + item[i].infohash;
-        }
-        (obj.date.text = item[i].created_time), (obj.magnet.text = magnet);
-        rowsData.push(obj);
-      }
-    } else {
-      let item = data.results;
-      for (let i = 0; i < item.length; i++) {
-        let obj = {};
-        obj.title = {};
-        obj.content = {};
-        obj.magnet = {};
-        obj.date = {};
-        obj.title.text = item[i].name;
-        obj.content.text = item[i].formatSize;
-        obj.magnet.text = item[i].magnet;
-        obj.date.text = item[i].count;
-        rowsData.push(obj);
+        allArr.push(obj);
+        magnetArr.push(data[i].magnet);
       }
     }
-    $ui.render({
-      views: [{
-          type: "menu",
+  }
+  render();
+  $('dataList').data = allArr;
+}
+
+
+function render() {
+  $ui.render({
+    props: {
+      navBarHidden: true,
+      bgcolor: $color("#2d9ae9")
+    },
+    views: [{
+      type: "label",
+      props: {
+        text:pageTitle,
+        align: $align.center,
+        textColor: $color("#f5f5f5")
+      },
+      layout: function (make, view) {
+        make.top.inset(20);
+        make.centerX.equalTo(0);
+        make.height.equalTo(40);
+      },
+      events: {
+        tapped: function (sender) {
+          $app.close(0);
+        }
+      }
+    }, {
+      type: "label",
+      props: {
+        text: "关闭",
+        align: $align.right,
+        textColor: $color("#f5f5f5")
+      },
+      layout: function (make, view) {
+        make.top.inset(20);
+        make.right.inset(10);
+        make.width.equalTo(60);
+        make.height.equalTo(40);
+      },
+      events: {
+        tapped: function (sender) {
+          $app.close(0);
+        }
+      }
+    }, {
+      type: "matrix",
+      props: {
+        columns: 1,
+        itemHeight: 60,
+        spacing: 10,
+        id: "dataList",
+        template: {
           props: {
-            items: nameList,
-            index: dIndex
+            radius: 10, //圆角,
+            borderWidth: 1,
+            borderColor: $color("#e8e8e8"),
           },
-          layout: function (make) {
-            make.left.top.right.equalTo(0);
-            make.height.equalTo(44);
-          },
-          events: {
-            changed: function (sender) {
-              let items = sender.items;
-              let index = sender.index;
-              search(index, word);
+          views: [{
+            type: "label",
+            props: {
+              id: "name",
+              borderColor: $color("#e8e8e8"),
+              align: $align.left,
+              font: $font(16)
+            },
+            layout: function (make, view) {
+              make.top.equalTo(0);
+              make.left.inset(20);
+              make.right.inset(100)
+              make.height.equalTo(60);
             }
+          }, {
+            type: "label",
+            props: {
+              id: "formatSize",
+              borderColor: $color("#e8e8e8"),
+              align: $align.center,
+              font: $font(14)
+            },
+            layout: function (make, view) {
+              make.top.equalTo(0);
+              make.right.inset(20);
+              make.height.equalTo(30);
+            }
+          }, {
+            type: "label",
+            props: {
+              id: "count",
+              borderColor: $color("#e8e8e8"),
+              align: $align.center,
+              font: $font(14)
+            },
+            layout: function (make, view) {
+              make.top.equalTo(30);
+              make.right.inset(20);
+              make.height.equalTo(30);
+            }
+          }],
+
+        },
+
+      },
+      layout: function (make, view) {
+        make.top.inset(60);
+        make.left.right.bottom.inset(0);
+      },
+      events: {
+        didSelect: function (sender, indexPath, data) {
+          $clipboard.text = data.magnet.text;
+          if ($clipboard.text) {
+            let row = indexPath.row;
+            sender.delete(row);
+            $ui.toast("复制成功", 0.5);
+          } else {
+            $ui.err("复制失败", 0.5)
           }
         },
-        {
-          type: "list",
-          props: {
-            grouped: true,
-            rowHeight: 64,
-            footer: {
-              type: "label",
-              props: {
-                height: 20,
-                text: "-我是有底线的-",
-                textColor: $color("#AAAAAA"),
-                align: $align.center,
-                font: $font(12)
-              }
-            },
-            template: [{
-                type: "label",
-                props: {
-                  id: "title",
-                  font: $font(20)
-                },
-                layout: function (make) {
-                  make.left.equalTo(10);
-                  make.top.right.inset(8);
-                  make.height.equalTo(24);
-                }
-              },
-              {
-                type: "label",
-                props: {
-                  id: "content",
-                  textColor: $color("#888888"),
-                  font: $font(15)
-                },
-                layout: function (make) {
-                  make.left.right.equalTo($("title"));
-                  make.top.equalTo($("title").bottom);
-                  make.bottom.equalTo(0);
-                }
-              },
-              {
-                type: "label",
-                props: {
-                  id: "date",
-                  textColor: $color("#888888"),
-                  font: $font(15)
-                },
-                layout: function (make) {
-                  make.right.equalTo($("content"));
-                  make.top.equalTo($("title").bottom);
-                  make.bottom.equalTo(0);
-                }
-              }
-            ],
-            data: [{
-              rows: rowsData
-            }]
-          },
-          layout: function (make, view) {
-            make.left.right.equalTo(0);
-            make.top.equalTo(45);
-            // make.height.equalTo(view.super);
-            make.bottom.equalTo(0);
-          },
-          events: {
-            didSelect: function (tableView, indexPath, data) {
-              let row = indexPath.row;
-              if (rowsData[row].magnet.text) {
-                $clipboard.text = rowsData[row].magnet.text;
-                tableView.delete(row);
-                $ui.toast("复制成功!", 0.5);
-              } else {
-                return $ui.error("无数据!");
-              }
-            },
-          },
-          
-        }
-      ]
-    });
-  });
-}
 
-//剪贴板检测
-function clipboardDetect() {
-  var str = $clipboard.text;
-  if (!str) {
-    inputpop();
-  }
-  var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
-  var reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3,4}/g;
-  var match = str.match(reg1);
-  if (match) {
-    clipboardTips(str);
-  } else {
-    var match = str.match(reg2);
-    if (match) {
-      clipboardTips(str);
-    } else {
-      inputpop();
-    }
-  }
-}
-// 提示
-function clipboardTips(str) {
-  $ui.alert({
-    title: "提示",
-    message: "是否使用剪贴板内容?",
-    actions: [{
-        title: "手动输入",
-        handler: function () {
-          inputpop();
-        }
-      },
-      {
-        title: "使用剪贴板内容",
-        handler: function () {
-          search(dIndex, str);
-        }
       }
-    ]
-  });
+    }],
+    layout: $layout.fill,
+  })
 }
 
 //检测扩展更新

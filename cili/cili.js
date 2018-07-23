@@ -1,4 +1,4 @@
-const version = 1.1; //版本号
+const version = 1.2; //版本号
 scriptVersionUpdate()
 const urls = ["http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&page=1",
   "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&page=1",

@@ -1,4 +1,4 @@
-const version = 1.2; //版本号
+const version = 1.3; //版本号
 scriptVersionUpdate()
 const urls = ["http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&page=1",
   "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&page=1",
@@ -6,29 +6,33 @@ const urls = ["http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9
   "http://bt.xiandan.in/api/search?source=BTDB&page=1",
   "http://bt.xiandan.in/api/search?source=BT4G&page=1"
 ];
-var allArr = [];
 var magnetArr = [];
-var pageTitle="";
+var pageTitle = "";
+var countIndex = 0;
+var isLoading = true;
 inputpop();
 async function inputpop() {
+  countIndex = 0;
+  isLoading = true;
   $input.text({
     type: $kbType.url,
     placeholder: "输入内容",
     handler: function (text) {
-      pageTitle=text;
+      pageTitle = text;
       text = encodeURI(text)
       toSearh(text);
     }
   })
 }
-
 async function toSearh(text) {
-  $ui.loading(true)
+  renderView();
+  $ui.loading(true);
+  magnetArr.length = 0;
   await search(text)
 }
 
 async function search(text) {
-  for (var i = 0; i < urls.length; i++) {
+  for (let i = urls.length - 1; i >= 0; i--) {
     let resp = await $http.get({
       url: `${urls[i]}&keyword=${text}`
     })
@@ -39,37 +43,63 @@ async function search(text) {
           name: {
             text: data[i].name
           },
-          magnet: {
-            text: data[i].magnet
-          },
           count: {
             text: data[i].count
           },
           formatSize: {
             text: data[i].formatSize
+          },
+          copy: {
+            info: data[i].magnet
+          },
+          copyXL: {
+            info: data[i].magnet
           }
         }
-        allArr.push(obj);
+        $("dataList").insert({
+          indexPath: $indexPath(0, countIndex),
+          value: obj
+        })
+        countIndex++;
         magnetArr.push(data[i].magnet);
       }
     }
   }
-  render();
-  $('dataList').data = allArr;
+  $ui.toast("加载完成");
+  isLoading = false;
 }
 
-
-function render() {
+function renderView() {
   $ui.render({
     props: {
       navBarHidden: true,
-      bgcolor: $color("#2d9ae9")
+      bgcolor: $color("#409eff")
     },
     views: [{
       type: "label",
       props: {
-        text:pageTitle,
+        text: "搜索",
+        align: $align.right,
+        textColor: $color("#f5f5f5"),
+        font: $font(20),
+      },
+      layout: function (make, view) {
+        make.top.inset(20);
+        make.left.equalTo(0);
+        make.width.equalTo(60);
+        make.height.equalTo(40);
+      },
+      events: {
+        tapped: function (sender) {
+          inputpop();
+        }
+      }
+    }, {
+      type: "label",
+      props: {
+        text: pageTitle,
         align: $align.center,
+        font: $font("bold", 20),
         textColor: $color("#f5f5f5")
       },
       layout: function (make, view) {
@@ -87,7 +117,8 @@ function render() {
       props: {
         text: "关闭",
         align: $align.right,
-        textColor: $color("#f5f5f5")
+        textColor: $color("#f5f5f5"),
+        font: $font(20),
       },
       layout: function (make, view) {
         make.top.inset(20);
@@ -104,7 +135,7 @@ function render() {
       type: "matrix",
       props: {
         columns: 1,
-        itemHeight: 60,
+        itemHeight: 100,
         spacing: 10,
         id: "dataList",
         template: {
@@ -119,25 +150,26 @@ function render() {
               id: "name",
               borderColor: $color("#e8e8e8"),
               align: $align.left,
-              font: $font(16)
+              lines: 0,
+              font: $font(14)
             },
             layout: function (make, view) {
               make.top.equalTo(0);
               make.left.inset(20);
-              make.right.inset(100)
-              make.height.equalTo(60);
+              make.right.inset(20)
+              make.height.equalTo(30);
             }
           }, {
             type: "label",
             props: {
               id: "formatSize",
               borderColor: $color("#e8e8e8"),
-              align: $align.center,
-              font: $font(14)
+              align: $align.left,
+              font: $font("bold", 14)
             },
             layout: function (make, view) {
-              make.top.equalTo(0);
-              make.right.inset(20);
+              make.top.equalTo($("name").bottom);
+              make.left.inset(20);
               make.height.equalTo(30);
             }
           }, {
@@ -145,18 +177,65 @@ function render() {
             props: {
               id: "count",
               borderColor: $color("#e8e8e8"),
-              align: $align.center,
-              font: $font(14)
+              align: $align.right,
+              font: $font("bold", 14),
+              textColor: $color("##668fc1")
             },
             layout: function (make, view) {
-              make.top.equalTo(30);
+              make.top.equalTo($("name").bottom);
               make.right.inset(20);
               make.height.equalTo(30);
             }
+          }, {
+            type: "button",
+            props: {
+              id: "copyXL",
+              title: "到迅雷打开",
+              bgcolor: $color("#409eff")
+            },
+            layout: function (make, view) {
+              make.top.equalTo($("formatSize").bottom);
+              make.left.inset(20);
+              make.width.equalTo(100);
+              make.height.equalTo(30);
+            },
+            events: {
+              tapped: function (sender) {
+                $clipboard.text = sender.info;
+                if ($clipboard.text) {
+                  $ui.toast("复制成功", 0.5);
+                } else {
+                  $ui.err("复制失败", 0.5)
+                }
+                $app.openURL(`thunder://${sender.info}`)
+              }
+            }
+          }, {
+            type: "button",
+            props: {
+              id: "copy",
+              title: "复制链接",
+              bgcolor: $color("#f56c6c")
+            },
+            layout: function (make, view) {
+              make.top.equalTo($("count").bottom);
+              make.right.inset(20);
+              make.width.equalTo(100);
+              make.height.equalTo(30);
+            },
+            events: {
+              tapped: function (sender) {
+                $clipboard.text = sender.info;
+                if ($clipboard.text) {
+                  $ui.toast("复制成功", 0.5);
+                } else {
+                  $ui.err("复制失败", 0.5)
+                }
+              }
+            }
           }],
-
+          layout: function (make, view) {},
         },
-
       },
       layout: function (make, view) {
         make.top.inset(60);
@@ -164,16 +243,11 @@ function render() {
       },
       events: {
         didSelect: function (sender, indexPath, data) {
-          $clipboard.text = data.magnet.text;
-          if ($clipboard.text) {
+          if (!isLoading) {
             let row = indexPath.row;
             sender.delete(row);
-            $ui.toast("复制成功", 0.5);
-          } else {
-            $ui.err("复制失败", 0.5)
           }
-        },
-
+        }
       }
     }],
     layout: $layout.fill,
@@ -194,7 +268,7 @@ function scriptVersionUpdate() {
           actions: [{
               title: "更新",
               handler: function () {
-                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/cili/cili.js&name=cili ${afterVersion}&icon=icon_001.png`;
+                let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/cili/cili.js&name=磁力搜索&icon=icon_023.png`;
                 $app.openURL(encodeURI(url));
                 $app.close();
               }

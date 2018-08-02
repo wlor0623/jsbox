@@ -1,4 +1,4 @@
-const version = 1.3; //版本号
+const version = 1.4; //版本号
 //检测扩展更新
 scriptVersionUpdate();
 $app.validEnv = $env.app;
@@ -6,9 +6,9 @@ var tip = "";
 var weather = "";
 var pageTitle = "";
 var mainColor = "#508aeb";
-var screenHeight = $device.info.screen.height -40;
+var screenHeight = $device.info.screen.height - 40;
+statistics()
 getLocation();
-
 function getLocation() {
   $location.fetch({
     handler: function(resp) {
@@ -19,7 +19,6 @@ function getLocation() {
     }
   });
 }
-
 async function getCity(lat, lng) {
   let resp = await $http.get(
     `https://api.chelaile.net.cn/goocity/city!localCity.action?s=IOS&gpsAccuracy=65.000000&gpstype=wgs&push_open=1&vc=10554&lat=${lat}&lng=${lng}`
@@ -28,19 +27,26 @@ async function getCity(lat, lng) {
   let cityId = data.jsonr.data.localCity.cityId;
   pageTitle = ` ${data.jsonr.data.localCity.cityName}市`;
   let cityName = $text.URLEncode(data.jsonr.data.localCity.cityName);
-  getWeather(cityName);
+  getWeather(lat, lng);
   renderMap(lat, lng, cityId, cityName);
 }
-
-function getWeather(cityName) {
+function getWeather(lat, lng) {
   $http.get({
-    url: `https://www.sojson.com/open/api/weather/json.shtml?city=${cityName}`,
+    url: `https://restapi.amap.com/v3/geocode/regeo?key=127caacaa204cc855a9bcdbc8ca06a49&location=${lng},${lat}`,
     handler: function(resp) {
       let data = resp.data;
-      tip = `${data.data.forecast[0].notice}`;
-      weather = `${data.data.forecast[0].type} : ${data.data.wendu}℃`;
-      $("tips").text = tip;
-      $("weather").text = weather;
+      if (data.status == 1) {
+        $("tips").text = `${data.regeocode.formatted_address}`;
+      }
+    }
+  });
+  $http.get({
+    url: `https://api.caiyunapp.com/v2/Y2FpeXVuX25vdGlmeQ==/${lng},${lat}/forecast`,
+    handler: function(resp) {
+      let data = resp.data;
+      if (data.status == "ok") {
+        $("weather").text = data.result.forecast_keypoint;
+      }
     }
   });
 }
@@ -84,7 +90,7 @@ function renderMap(lat, lng, cityId, cityName) {
         },
         layout: function(make) {
           make.top.inset(30);
-          make.centerX.equalTo(0)
+          make.centerX.equalTo(0);
           make.height.equalTo(30);
         },
         events: {
@@ -93,14 +99,13 @@ function renderMap(lat, lng, cityId, cityName) {
           }
         }
       },
-      
       {
         type: "label",
         props: {
-          id: "weather",
-          text: weather,
-          lines: 0,
+          id: "tips",
           hidden: true,
+          text: tip,
+          lines: 0,
           textColor: $color("#fff"),
           align: $align.center
         },
@@ -113,10 +118,10 @@ function renderMap(lat, lng, cityId, cityName) {
       {
         type: "label",
         props: {
-          id: "tips",
-          hidden: true,
-          text: tip,
+          id: "weather",
+          text: weather,
           lines: 0,
+          hidden: true,
           textColor: $color("#fff"),
           align: $align.center
         },
@@ -181,4 +186,9 @@ function scriptVersionUpdate() {
       }
     }
   });
+}
+// 统计
+async function statistics() {
+  let resp =await $http.get(`http://118.126.106.247:3333/tongji/cili`);
+  console.log(resp.data);
 }

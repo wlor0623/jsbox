@@ -420,7 +420,7 @@ async function scriptVersionUpdate() {
         {
           title: '更新',
           handler: function() {
-            let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/cili/cili.js&name=无水印视频解析&icon=icon_055.png&author=wlor`;
+            let url = `jsbox://install?url=https://raw.githubusercontent.com/wlor0623/jsbox/master/vedios/videos.js&name=无水印视频解析&icon=icon_055.png&author=wlor`;
             $app.openURL(encodeURI(url));
             $app.close();
           }

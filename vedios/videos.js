@@ -1,6 +1,6 @@
 // https://raw.githubusercontent.com/wlor0623/jsbox/master/vedios/videos.js
 // 无水印视频解析
-const version = 1.1;
+const version = 1.0;
 let videoTitle = '';
 let videoLinks;
 let videoIndex = 0;

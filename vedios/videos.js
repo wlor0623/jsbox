@@ -1,80 +1,92 @@
 // https://raw.githubusercontent.com/wlor0623/jsbox/master/vedios/videos.js
 // 无水印视频解析
-const version = 1.0;
+const version = 1.1;
 let videoTitle = '';
 let videoLinks;
 let videoIndex = 0;
 let videoCover = '';
 let PHPSESSIID = '';
+let iii_Session = '';
 let shortUrlArr = ['url', 't', 'dwz', 'suo'];
-let  service1Arr = ['tiktokv', 'tiktokcdn', 'tiktok', 'musical', 'flipagram'];
-let  hostMap = {
-    huoshan: 'huoshan',
-    huoshanzhibo: 'huoshan',
-    hotsoonzb: 'huoshan',
-    smzhuhe: 'huoshan',
-    woaidazhe: 'huoshan',
-    gifshow: 'kuaishou',
-    kuaishou: 'kuaishou',
-    kwai: 'kuaishou',
-    kw: 'kuaishou',
-    yxixy: 'kuaishou',
-    chenzhongtech: 'kuaishou',
-    miaopai: 'weibo',
-    xiaokaxiu: 'weibo',
-    yixia: 'weibo',
-    weibo: 'weibo',
-    weico: 'weibo',
-    toutiao: 'toutiao',
-    '365yg': 'toutiao',
-    ixigua: 'toutiao',
-    xiguaapp: 'toutiao',
-    xiguavideo: 'toutiao',
-    xiguashipin: 'toutiao',
-    pstatp: 'toutiao',
-    zijiecdn: 'toutiao',
-    zijieimg: 'toutiao',
-    toutiaocdn: 'toutiao',
-    toutiaoimg: 'toutiao',
-    toutiao12: 'toutiao',
-    toutiao11: 'toutiao',
-    neihanshequ: 'toutiao',
-    meipai: 'meipai',
-    douyin: 'douyin',
-    iesdouyin: 'douyin',
-    amemv: 'douyin',
-    tiktokv: 'douyin',
-    tiktokcdn: 'douyin',
-    tiktok: 'douyin',
-    douyinshortvideo: 'douyin',
-    musical: 'muse',
-    musemuse: 'muse',
-    muscdn: 'muse',
-    xiaoying: 'xiaoying',
-    vivavideo: 'xiaoying',
-    immomo: 'momo',
-    momocdn: 'momo',
-    inke: 'inke',
-    flipagram: 'flipagram',
-    '163': 'yunyinyue',
-    qq: 'weishi',
-    qzone: 'weishi',
-    weishi: 'weishi',
-    hulushequ: 'pipixia',
-    pipixia:'pipixia'
-  };
+let service1Arr = ['tiktokv', 'tiktokcdn', 'tiktok', 'musical', 'flipagram'];
+let hostMap = {
+  huoshan: 'huoshan',
+  huoshanzhibo: 'huoshan',
+  hotsoonzb: 'huoshan',
+  smzhuhe: 'huoshan',
+  woaidazhe: 'huoshan',
+  gifshow: 'kuaishou',
+  kuaishou: 'kuaishou',
+  kwai: 'kuaishou',
+  kw: 'kuaishou',
+  yxixy: 'kuaishou',
+  chenzhongtech: 'kuaishou',
+  miaopai: 'weibo',
+  xiaokaxiu: 'weibo',
+  yixia: 'weibo',
+  weibo: 'weibo',
+  weico: 'weibo',
+  toutiao: 'toutiao',
+  '365yg': 'toutiao',
+  ixigua: 'toutiao',
+  xiguaapp: 'toutiao',
+  xiguavideo: 'toutiao',
+  xiguashipin: 'toutiao',
+  pstatp: 'toutiao',
+  zijiecdn: 'toutiao',
+  zijieimg: 'toutiao',
+  toutiaocdn: 'toutiao',
+  toutiaoimg: 'toutiao',
+  toutiao12: 'toutiao',
+  toutiao11: 'toutiao',
+  neihanshequ: 'toutiao',
+  meipai: 'meipai',
+  douyin: 'douyin',
+  iesdouyin: 'douyin',
+  amemv: 'douyin',
+  tiktokv: 'douyin',
+  tiktokcdn: 'douyin',
+  tiktok: 'douyin',
+  douyinshortvideo: 'douyin',
+  musical: 'muse',
+  musemuse: 'muse',
+  muscdn: 'muse',
+  xiaoying: 'xiaoying',
+  vivavideo: 'xiaoying',
+  immomo: 'momo',
+  momocdn: 'momo',
+  inke: 'inke',
+  flipagram: 'flipagram',
+  '163': 'yunyinyue',
+  qq: 'weishi',
+  qzone: 'weishi',
+  weishi: 'weishi',
+  hulushequ: 'pipixia',
+  pipixia: 'pipixia',
+  kg: 'kg',
+  kg3: 'kg'
+};
 await getCookie();
 await scriptVersionUpdate();
 async function getCookie() {
-  var resp = await $http.get('http://douyin.iiilab.com/');
+  var resp = await $http.get({
+    url: 'http://pipixia.iiilab.com/',
+    header: {
+      'Cookie': '',
+    },
+  });
   let Cookie = resp.response.headers['Set-Cookie'];
-  let sliceStr = Cookie.slice(
+  let PHPSESSIID = Cookie.slice(
     Cookie.indexOf('PHPSESSIID=') + 11,
     Cookie.indexOf('PHPSESSIID=') + 23
   );
-  if (/^\d{12}$/.test(sliceStr)) {
-    PHPSESSIID = sliceStr;
-    console.log('获取到Cookie', PHPSESSIID);
+  let iii_Session = Cookie.slice(
+    Cookie.indexOf('iii_Session=') + 12,
+    Cookie.indexOf(';')
+  );
+  if (/^\d{12}$/.test(PHPSESSIID)) {
+    console.log('PHPSESSIID:', PHPSESSIID);
+    console.log("iii_Session:", iii_Session);
     renderView();
   } else {
     return $ui.alert('cookie获取失败!');
@@ -284,7 +296,7 @@ function parseHost(url) {
     array[0] == 'h5' ||
     array[0] == 'mlive3' ||
     array[0] == 'boc' ||
-    array[0] == 'reflow' || array[0] == 'v'
+    array[0] == 'reflow' || array[0] == 'v' || array[0] == 'node'
   ) {
     return array[1];
   }
@@ -299,7 +311,7 @@ function unShortUrlAndParseVideo(link) {
     url: "http://service0.iiilab.com/url/unshort",
     header: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'Cookie': `iii_Session=41r8s87vgstudugp1pio88s0b7; PHPSESSIID=${PHPSESSIID}`,
+      'Cookie': `iii_Session=${iii_Session}; PHPSESSIID=${PHPSESSIID}`,
       'Origin': 'http://toutiao.iiilab.com',
       'Referer': 'http://toutiao.iiilab.com/',
     },
@@ -309,11 +321,13 @@ function unShortUrlAndParseVideo(link) {
       s: generateStr(link + '@' + tokenStr).toString(10)
     },
     handler: function (resp) {
+      console.log(resp);
+
       let data = resp.data;
       if (data.succ) {
-        console.log("长链接",data.data );
+        console.log("长链接", data.data);
         start(data.data);
-      }else{
+      } else {
         $ui.alert('长链接转换失败!')
       }
     }
@@ -329,7 +343,7 @@ function parseVideo(link, site) {
     url: `http://service${contains(service1Arr, host) ? '1' : '0'}.iiilab.com/video/web/${site}`,
     header: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'Cookie': `iii_Session=41r8s87vgstudugp1pio88s0b7; PHPSESSIID=${PHPSESSIID}`,
+      'Cookie': `iii_Session=25149cenrhu9bdrjpa3c8t23r7; _gsp=GA1f91be043f264085; PHPSESSIID=${PHPSESSIID}`,
       'Origin': 'http://toutiao.iiilab.com',
       'Referer': 'http://toutiao.iiilab.com/',
     },
@@ -339,6 +353,7 @@ function parseVideo(link, site) {
       s: generateStr(link + '@' + tokenStr).toString(10)
     },
     handler: function (resp) {
+      console.log(resp.data);
       var data = resp.data;
       if (data.succ) {
         videoTitle = data.data.text;

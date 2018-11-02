@@ -1,12 +1,14 @@
 // https://raw.githubusercontent.com/wlor0623/jsbox/master/vedios/videos.js
 // 无水印视频解析
-const version = 1.0;
+const version = 1.2;
 let videoTitle = '';
 let videoLinks;
 let videoIndex = 0;
 let videoCover = '';
+
 let PHPSESSIID = '';
 let iii_Session = '';
+let _gsp = "";
 let shortUrlArr = ['url', 't', 'dwz', 'suo'];
 let service1Arr = ['tiktokv', 'tiktokcdn', 'tiktok', 'musical', 'flipagram'];
 let hostMap = {
@@ -70,21 +72,36 @@ await getCookie();
 await scriptVersionUpdate();
 async function getCookie() {
   var resp = await $http.get({
-    url: 'http://pipixia.iiilab.com/',
+    url: 'http://douyin.iiilab.com/',
     header: {
-      'Cookie': '',
-    },
+      Cookie: "iii_Se;",
+    }
   });
+  var resps = await $http.post({
+    url: 'http://service0.iiilab.com/sponsor/getByPage',
+    header: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    },
+    body: {
+      page: 'douyin'
+    }
+  });
+  let Cookies = resps.response.headers['Set-Cookie'];
+  _gsp = Cookies.slice(
+    Cookies.indexOf('_gsp=') + 5,
+    Cookies.indexOf(';')
+  )
   let Cookie = resp.response.headers['Set-Cookie'];
-  let PHPSESSIID = Cookie.slice(
+  PHPSESSIID = Cookie.slice(
     Cookie.indexOf('PHPSESSIID=') + 11,
     Cookie.indexOf('PHPSESSIID=') + 23
   );
-  let iii_Session = Cookie.slice(
+  iii_Session = Cookie.slice(
     Cookie.indexOf('iii_Session=') + 12,
     Cookie.indexOf(';')
   );
   if (/^\d{12}$/.test(PHPSESSIID)) {
+    console.log("_gsp", _gsp);
     console.log('PHPSESSIID:', PHPSESSIID);
     console.log("iii_Session:", iii_Session);
     renderView();
@@ -310,10 +327,15 @@ function unShortUrlAndParseVideo(link) {
   $http.post({
     url: "http://service0.iiilab.com/url/unshort",
     header: {
+      Accept: "application/json, text/javascript, */*; q=0.01",
+      "Accept-Encoding": "gzip, deflate",
+      "Accept-Language": "zh-CN,zh;q=0.9",
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'Cookie': `iii_Session=${iii_Session}; PHPSESSIID=${PHPSESSIID}`,
+      'Cookie': `iii_Session=${iii_Session}; PHPSESSIID=${PHPSESSIID}; _gsp=${_gsp}`,
       'Origin': 'http://toutiao.iiilab.com',
       'Referer': 'http://toutiao.iiilab.com/',
+      Host: "service0.iiilab.com",
+      Connection: "keep-alive"
     },
     body: {
       link: link,
@@ -342,10 +364,15 @@ function parseVideo(link, site) {
   $http.post({
     url: `http://service${contains(service1Arr, host) ? '1' : '0'}.iiilab.com/video/web/${site}`,
     header: {
+      Accept: "application/json, text/javascript, */*; q=0.01",
+      "Accept-Encoding": "gzip, deflate",
+      "Accept-Language": "zh-CN,zh;q=0.9",
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'Cookie': `iii_Session=25149cenrhu9bdrjpa3c8t23r7; _gsp=GA1f91be043f264085; PHPSESSIID=${PHPSESSIID}`,
+      'Cookie': `iii_Session=${iii_Session}; PHPSESSIID=${PHPSESSIID}; _gsp=${_gsp}`,
       'Origin': 'http://toutiao.iiilab.com',
       'Referer': 'http://toutiao.iiilab.com/',
+      Host: "service0.iiilab.com",
+      Connection: "keep-alive"
     },
     body: {
       link: link,
@@ -381,7 +408,7 @@ function parseVideo(link, site) {
         $('vedioView').hidden = false;
         $ui.toast('视频链接获取成功', 0.5);
       } else {
-        $ui.alert(data.retDesc);
+        $ui.alert('视频获取失败!');
       }
     }
   });
